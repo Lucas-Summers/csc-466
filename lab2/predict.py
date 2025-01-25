@@ -19,3 +19,4 @@ if __name__ == "__main__":
         pass
     else:
         print(tree.predict(df[:10]))
+        print(tree.to_graphviz_dot())

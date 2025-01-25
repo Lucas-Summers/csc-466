@@ -67,3 +67,50 @@ class c45:
         except Exception as e:
             print("Error reading tree from", filename, ":", e)
 
+    def to_graphviz_dot(self):
+        '''
+        Returns the tree in dot format, to be used with graphviz.
+        Paste into https://dreampuf.github.io/GraphvizOnline/?engine=dot to
+        visualize the tree.
+        '''
+        if self.tree is None:
+            print("Tree is not trained, call fit() or read_tree() first")
+            return None
+        else:
+            dot_lines = ['digraph DecisionTree {\n',
+                         '    node [fontname = "Monospace", shape="rectangle", style="rounded", width=3];\n',
+                         '    edge [fontname = "Monospace", fontsize="10", fontcolor="grey"];\n']
+            dot_lines.extend(self.tree_to_dot(self.tree["node"]))
+            dot_lines.append('}\n')
+            return "".join(dot_lines)
+        
+    def tree_to_dot(self, node, ctr=0):
+        '''
+        Recursively creates a string with the tree in dot format. A node 
+        is the dictionary that is labeled "node"
+        '''
+        dot_lines = []
+    
+        # Create a unique node identifier
+        node_name = f"{node['var']}_{ctr}"
+        dot_lines.append(f'    {node_name} [label="{node["var"]}"];\n')
+        
+        for edge in node['edges']:
+            edge_value = edge['edge']['value']
+            if "leaf" in edge['edge']:
+                # is leaf edge
+                decision = edge['edge']['leaf']['decision']
+                p = edge['edge']['leaf']['p']
+                child_node_name = f"{decision}_{ctr+1}"
+                dot_lines.append(f'    {child_node_name} [label="{decision} (p={p})"];\n')
+            else:
+                # is a node edge
+                child_node = edge['edge']['node']
+                child_node_name = f"{child_node['var']}_{ctr+1}"
+                child_dot_lines = self.tree_to_dot(child_node, ctr+1)   
+                dot_lines.extend(child_dot_lines)
+                
+            dot_lines.append(f'    {node_name} -> {child_node_name} [label="{edge_value}"];\n')
+    
+        return dot_lines
+
