@@ -18,7 +18,7 @@ def read_csv(filename):
     class_var = data.split("\n")[2]
 
     # remove second and third line, so it looks like a normal csv
-    data = data.split("\n", 2)[0] + data.split("\n", 3)[3]
+    data = data.split("\n", 2)[0] + "\n" + data.split("\n", 3)[3]
 
     return domain, class_var, pd.read_csv(io.StringIO(data))
 
