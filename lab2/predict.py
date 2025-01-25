@@ -18,5 +18,6 @@ if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[3] == "eval":
         pass
     else:
-        print(tree.predict(df[:10]))
+        print(df[8:10])
+        print(tree.predict(df[8:10]))
         print(tree.to_graphviz_dot())

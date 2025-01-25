@@ -86,8 +86,7 @@ class c45:
         
     def tree_to_dot(self, node, ctr=0):
         '''
-        Recursively creates a string with the tree in dot format. A node 
-        is the dictionary that is labeled "node"
+        Recursively creates a list of string with the node in dot format.
         '''
         dot_lines = []
     
@@ -101,13 +100,15 @@ class c45:
                 # is leaf edge
                 decision = edge['edge']['leaf']['decision']
                 p = edge['edge']['leaf']['p']
-                child_node_name = f"{decision}_{ctr+1}"
+                ctr += 1
+                child_node_name = f"{decision}_{ctr}"
                 dot_lines.append(f'    {child_node_name} [label="{decision} (p={p})"];\n')
             else:
                 # is a node edge
                 child_node = edge['edge']['node']
-                child_node_name = f"{child_node['var']}_{ctr+1}"
-                child_dot_lines = self.tree_to_dot(child_node, ctr+1)   
+                ctr += 1
+                child_node_name = f"{child_node['var']}_{ctr}"
+                child_dot_lines = self.tree_to_dot(child_node, ctr)   
                 dot_lines.extend(child_dot_lines)
                 
             dot_lines.append(f'    {node_name} -> {child_node_name} [label="{edge_value}"];\n')
