@@ -1,0 +1,52 @@
+{
+	"dataset": "nursery.csv",
+	"node": {
+		"var": "finance",
+		"edges": [{
+				"edge": {
+					"value": "convenient",
+					"node": {
+						"var": "parents",
+						"edges": [{
+								"edge": {
+									"value": "usual",
+									"leaf": {
+										"decision": "not_recom",
+										"p": 0.74
+									}
+								}
+							},
+							{
+								"edge": {
+									"value": "pretentious",
+									"leaf": {
+										"decision": "priority",
+										"p": 0.78
+									}
+								}
+							},
+							{
+								"edge": {
+									"value": "great_pret",
+									"leaf": {
+										"decision": "spec_prior",
+										"p": 0.9
+									}
+								}
+							}
+						]
+					}
+				}
+			},
+			{
+				"edge": {
+					"value": "inconv",
+					"leaf": {
+						"decision": "very_recom",
+						"p": 0.8
+					}
+				}
+			}
+		]
+	}
+}
