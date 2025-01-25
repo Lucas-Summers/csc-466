@@ -18,4 +18,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 4 and sys.argv[3] == "eval":
         pass
     else:
-        print(tree.predict(df))
+        print(tree.predict(df[:10]))
