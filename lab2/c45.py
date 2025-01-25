@@ -13,10 +13,12 @@ class c45:
     def fit(self, train_x, train_y):
         pass
     
-    def predict(self, X_test_df):
+    def predict(self, X_test_df, prob=False):
         '''
         Predicts the class for each row in the given dataframe. Expects
-        a dataframe with labeled columns.
+        a dataframe with labeled columns. 
+        Returns a list of class predictions if prob=False, or a list of
+        tuples with the class and the probability if prob=True
         '''
         if self.tree is None:
             print("Tree is not trained, call fit() or read_tree() first")
@@ -24,14 +26,14 @@ class c45:
         # iterate and build a list of predictions
         result = []
         for index, row in X_test_df.iterrows():
-            pred = self.predict_row(row, self.tree["node"])
+            pred = self.predict_row(row, self.tree["node"], prob)
             result.append(pred)
         return result
 
-    def predict_row(self, row, node):
+    def predict_row(self, row, node, prob=False):
         '''
         Get the predicted class for a row by traversing the given node
-        returns a dict {'decision': 'not_recom', 'p': 0.74}
+        returns the class if prob=False, a tuple (class, p) if prob=True,
         or None if the row does not reach a leaf
         '''
         # what label the tree is splitting on
@@ -43,10 +45,12 @@ class c45:
             edge = edge_dict["edge"]
             if edge["value"] == row_value:
                 if "leaf" in edge:
-                    print("Predicted class:", edge["leaf"])
-                    return edge["leaf"]
+                    result = edge["leaf"]
+                    if not prob:
+                        return result["decision"]
+                    else:
+                        return (result["decision"], result["p"])
                 else:
-                    print("Going to node", edge["node"])
                     return self.predict_row(row, edge["node"])
         return None
 
