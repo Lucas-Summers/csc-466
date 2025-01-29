@@ -169,7 +169,13 @@ class c45:
         # iterate and build a list of predictions
         result = []
         for index, row in X_test_df.iterrows():
-            pred = self.predict_row(row, self.tree["node"], prob)
+            if "node" in self.tree:
+                pred = self.predict_row(row, self.tree["node"], prob)
+            elif "leaf" in self.tree:
+                pred = (self.tree["leaf"]["decision"], self.tree["leaf"]["p"]) if prob else self.tree["leaf"]["decision"]
+            else:
+                print("Error: Invalid tree format")
+                return None
             result.append(pred)
         return result
     

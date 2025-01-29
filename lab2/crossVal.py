@@ -19,7 +19,7 @@ def nfold(csv_file, hyps, n=10):
         test = shuffled.iloc[i*nth:(i+1)*nth]
         train = pd.concat([shuffled.iloc[:i*nth], shuffled.iloc[(i+1)*nth:]])
 
-        model = c45()
+        model = c45(metric=hyps[0], threshold=hyps[1])
         model.fit(train.iloc[:, :-1], train.iloc[:, -1], csv_file)
         predictions = model.predict(test.iloc[:, :-1])
 
@@ -55,18 +55,31 @@ def read_hyps(hyps_file):
 def grid_search(csv_file, hyps_file):
     best_accuracy = 0
     best_confusion_matrix = None
+    best_params = None
 
     info_gains, ratios = read_hyps(hyps_file)
     
-    pbar_info = tqdm(info_gains, position=0)
-    for info_gain in pbar_info:
-        for gain_ratio in ratios:
-            acc, confusion_matrix = nfold(csv_file, (info_gain, gain_ratio))
-            if acc >= best_accuracy:
-                best_accuracy = acc
-                best_confusion_matrix = confusion_matrix
-            pbar_info.set_description(f"InfoGain: {info_gain:.2f} Ratio: {gain_ratio:.2f}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+    pbar = tqdm(info_gains)
+    for thresh in pbar:
+        pbar.set_description(f"Info Gain: {thresh:.2f}")
+        acc, confusion_matrix = nfold(csv_file, ("info_gain", thresh))
+        if acc >= best_accuracy:
+            best_accuracy = acc
+            best_confusion_matrix = confusion_matrix
+            best_params = ("info_gain", thresh)
+        pbar.set_description(f"Info Gain: {thresh:.2f}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+    
+    pbar = tqdm(ratios)
+    for thresh in pbar:
+        pbar.set_description(f"Ratio: {thresh:.2f}")
+        acc, confusion_matrix = nfold(csv_file, ("gain_ratio", thresh))
+        if acc >= best_accuracy:
+            best_accuracy = acc
+            best_confusion_matrix = confusion_matrix
+            best_params = ("gain_ratio", thresh)
+        pbar.set_description(f"Ratio: {thresh:.2f}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
 
+    print(f"Best parameters: {best_params}")
     print(f"Best accuracy: {best_accuracy}")
     print("Confusion matrix:")
     print(best_confusion_matrix)
