@@ -2,7 +2,10 @@ from csv_reader import read_csv
 from c45 import c45
 import json
 from tqdm import tqdm
+import sys
 import pandas as pd
+
+# try it out with `python crossVal.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.json`
 
 def nfold(csv_file, hyps, n=10):
     '''
@@ -62,34 +65,39 @@ def grid_search(csv_file, hyps_file):
     # info gain searches
     pbar = tqdm(info_gains)
     for thresh in pbar:
-        pbar.set_description(f"Info Gain: {thresh:.2f}")
+        pbar.set_description(f"Info Gain: {thresh}")
         acc, confusion_matrix = nfold(csv_file, ("info_gain", thresh))
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
             best_params = ("info_gain", thresh)
-        pbar.set_description(f"Info Gain: {thresh:.2f}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+        pbar.set_description(f"Info Gain: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
     
     # gain ratio searches
     pbar = tqdm(ratios)
     for thresh in pbar:
-        pbar.set_description(f"Ratio: {thresh:.2f}")
+        pbar.set_description(f"Gain Ratio: {thresh}")
         acc, confusion_matrix = nfold(csv_file, ("gain_ratio", thresh))
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
             best_params = ("gain_ratio", thresh)
-        pbar.set_description(f"Ratio: {thresh:.2f}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+        pbar.set_description(f"Gain Ratio: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
 
-    print(f"Best parameters: {best_params}")
-    print(f"Best accuracy: {best_accuracy}")
-    print("Confusion matrix:")
-    print(best_confusion_matrix)
+    return best_accuracy, best_confusion_matrix, best_params
 
-grid_search("csv/nursery.csv", "trees/hyp_sample.json")
-
-# if __name__ == "__main__":
-#     if len(sys.argv) != 3:
-#         print("Usage: python crossVal.py <CSVFile> <HypsFile>")
-#     else:
-#         tenfold(sys.argv[1], sys.argv[2])
+if __name__ == "__main__":
+    if len(sys.argv) == 3 or len(sys.argv) == 4:
+        acc, conf_mat, params = grid_search(sys.argv[1], sys.argv[2])
+        print(f"Best parameters: {params}")
+        print(f"Best accuracy: {acc}")
+        print("Confusion matrix:")
+        print(conf_mat)
+        if len(sys.argv) == 4:
+            domain, class_var, df = read_csv(sys.argv[1])
+            model = c45(metric=params[0], threshold=params[1])
+            model.fit(df.iloc[:, :-1], df.iloc[:, -1], sys.argv[1])
+            model.save_tree(sys.argv[3])
+            # print(model.to_graphviz_dot())
+    else:
+        print("Usage: python crossVal.py <CSVFile> <HypsFile> [<save_best_tree.json>]")
