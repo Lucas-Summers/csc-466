@@ -59,6 +59,7 @@ def grid_search(csv_file, hyps_file):
 
     info_gains, ratios = read_hyps(hyps_file)
     
+    # info gain searches
     pbar = tqdm(info_gains)
     for thresh in pbar:
         pbar.set_description(f"Info Gain: {thresh:.2f}")
@@ -69,6 +70,7 @@ def grid_search(csv_file, hyps_file):
             best_params = ("info_gain", thresh)
         pbar.set_description(f"Info Gain: {thresh:.2f}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
     
+    # gain ratio searches
     pbar = tqdm(ratios)
     for thresh in pbar:
         pbar.set_description(f"Ratio: {thresh:.2f}")

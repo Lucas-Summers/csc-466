@@ -147,7 +147,7 @@ class c45:
                 subset = X[X[attr] == value]
                 split_info += (len(subset) / len(X)) * np.log2(len(subset) / len(X))
 
-        return info_gain / split_info if split_info != 0 else 0
+        return -(info_gain / split_info) if split_info != 0 else 0
 
     def fit(self, X_train, y_train, filename):
         '''
