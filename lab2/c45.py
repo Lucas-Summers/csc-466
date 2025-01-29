@@ -9,6 +9,9 @@ class c45:
         self.metric = metric
         self.threshold = threshold
         self.tree = None
+
+        # for unique node ids when making a graphviz dot file
+        self.id_ctr = 0 
     
     def metric_score(self, X, y, attr):
         if self.metric == "info_gain":
@@ -254,15 +257,15 @@ class c45:
             dot_lines.extend(self.tree_to_dot(self.tree["node"]))
             dot_lines.append('}\n')
             return "".join(dot_lines)
-        
-    def tree_to_dot(self, node, ctr=0):
+    
+    def tree_to_dot(self, node):
         '''
         Recursively creates a list of string with the node in dot format.
         '''
         dot_lines = []
-    
+        unique_id = self.id_ctr
         # Create a unique node identifier
-        node_name = f"{node['var']}_{ctr}"
+        node_name = f"{node['var']}_{unique_id}"
         dot_lines.append(f'    {node_name} [label="{node["var"]}"];\n')
         
         for edge in node['edges']:
@@ -271,15 +274,15 @@ class c45:
                 # is leaf edge
                 decision = edge['edge']['leaf']['decision']
                 p = edge['edge']['leaf']['p']
-                ctr += 1
-                child_node_name = f"{decision}_{ctr}"
-                dot_lines.append(f'    {child_node_name} [label="{decision} (p={p})"];\n')
+                self.id_ctr += 1
+                child_node_name = f"{decision}_{self.id_ctr}"
+                dot_lines.append(f'    {child_node_name} [label="{decision} (p={p:.3f})"];\n')
             else:
                 # is a node edge
                 child_node = edge['edge']['node']
-                ctr += 1
-                child_node_name = f"{child_node['var']}_{ctr}"
-                child_dot_lines = self.tree_to_dot(child_node, ctr)   
+                self.id_ctr += 1
+                child_node_name = f"{child_node['var']}_{self.id_ctr}"
+                child_dot_lines = self.tree_to_dot(child_node)   
                 dot_lines.extend(child_dot_lines)
                 
             dot_lines.append(f'    {node_name} -> {child_node_name} [label="{edge_value}"];\n')

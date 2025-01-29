@@ -15,9 +15,139 @@
       {
         "edge": {
           "value": "priority",
-          "leaf": {
-            "decision": "spec_prior",
-            "p": 0.5708333333333333
+          "node": {
+            "var": "has_nurs",
+            "edges": [
+              {
+                "edge": {
+                  "value": "proper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.65625
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "less_proper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.65625
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "improper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.65625
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.9895833333333334
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "critical",
+                  "leaf": {
+                    "decision": "spec_prior",
+                    "p": 0.8784722222222222
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "very_crit",
+                  "leaf": {
+                    "decision": "spec_prior",
+                    "p": 0.9895833333333334
+                  }
+                }
+              }
+            ]
           }
         }
       },
