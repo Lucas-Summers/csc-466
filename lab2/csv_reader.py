@@ -21,3 +21,8 @@ def read_csv(filename):
     data = data.split("\n", 2)[0] + "\n" + data.split("\n", 3)[3]
 
     return domain, class_var, pd.read_csv(io.StringIO(data))
+
+def get_Xy(class_var, df):
+    y = df[class_var]
+    X = df.drop(columns=[class_var])
+    return X, y

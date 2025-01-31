@@ -1,5 +1,5 @@
 import sys
-from csv_reader import read_csv
+from csv_reader import read_csv, get_Xy
 from c45 import c45
 import json
 
@@ -13,9 +13,9 @@ if __name__ == "__main__":
     json_file = sys.argv[2]
     
     domain, class_var, df = read_csv(csv_file)
+    X, y = get_Xy(class_var, df)
     model = c45()
-    X = df.iloc[:, :-1]
-    y = df.iloc[:, -1]
+
     model.fit(X, y, csv_file)
     print(json.dumps(model.tree, indent=2))
 

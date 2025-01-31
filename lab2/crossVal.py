@@ -1,4 +1,4 @@
-from csv_reader import read_csv
+from csv_reader import read_csv, get_Xy
 from c45 import c45
 import json
 from tqdm import tqdm
@@ -20,13 +20,15 @@ def nfold(csv_file, hyps, n=10):
     overall_confusion_matrix = None
     for i in range(n):
         test = shuffled.iloc[i*nth:(i+1)*nth]
+        ts_X, ts_y = get_Xy(class_var, test)
         train = pd.concat([shuffled.iloc[:i*nth], shuffled.iloc[(i+1)*nth:]])
+        tr_X, tr_y = get_Xy(class_var, train)
 
         model = c45(metric=hyps[0], threshold=hyps[1])
-        model.fit(train.iloc[:, :-1], train.iloc[:, -1], csv_file)
-        predictions = model.predict(test.iloc[:, :-1])
-
-        ground_truth = test.iloc[:, -1]
+        model.fit(tr_X, tr_y, csv_file)
+        
+        predictions = model.predict(ts_X)
+        ground_truth = ts_y
         correct = (predictions == ground_truth).sum()
         total = len(ground_truth)
         # incorrect = total - correct
@@ -95,8 +97,9 @@ if __name__ == "__main__":
         print(conf_mat)
         if len(sys.argv) == 4:
             domain, class_var, df = read_csv(sys.argv[1])
+            X, y = get_Xy(class_var, df)
             model = c45(metric=params[0], threshold=params[1])
-            model.fit(df.iloc[:, :-1], df.iloc[:, -1], sys.argv[1])
+            model.fit(X, y, sys.argv[1])
             model.save_tree(sys.argv[3])
             # print(model.to_graphviz_dot())
     else:

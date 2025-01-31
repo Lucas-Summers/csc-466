@@ -1,4 +1,4 @@
-from csv_reader import read_csv
+from csv_reader import read_csv, get_Xy
 import json
 from tqdm import tqdm
 import sys
@@ -38,13 +38,15 @@ def nfold(df, hyps, encoder, n=10):
     overall_confusion_matrix = None
     for i in range(n):
         test = shuffled.iloc[i*nth:(i+1)*nth]
+        ts_X, ts_y = get_Xy(class_var, test)
         train = pd.concat([shuffled.iloc[:i*nth], shuffled.iloc[(i+1)*nth:]])
+        tr_X, tr_y = get_Xy(class_var, train)
        
         model = c45(metric=hyps[0], threshold=hyps[1])
-        model.fit(train.iloc[:, :-1], train.iloc[:, -1])
-        predictions = model.predict(test.iloc[:, :-1])
+        model.fit(tr_X, tr_y)
 
-        ground_truth = test.iloc[:, -1]
+        predictions = model.predict(ts_X)
+        ground_truth = tr_y
 
         if encoder is not None:
             ground_truth = encoder.categories_[-1][ground_truth.astype(int)]
@@ -132,10 +134,12 @@ if __name__ == "__main__":
         print(conf_mat)
         if len(sys.argv) == 4:
             model = c45(metric=params[0], threshold=params[1])
-            model.fit(df.iloc[:, :-1], df.iloc[:, -1])
+            ev_X, ev_y = get_Xy(class_var, df)
+            model.fit(ev_X, ev_y)
             
             if categorical_columns:
                 df[categorical_columns] = encoder.inverse_transform(df[categorical_columns])
-            save_tree(model, df.iloc[:,:-1].columns, df.iloc[:, -1].unique(), sys.argv[3])
+            print(ev_X.columns, ev_y.unique())
+            save_tree(model, ev_X.columns, ev_y.unique(), sys.argv[3])
     else:
         print("Usage: python crossValSK.py <CSVFile> <HypsFile> [<save_best_tree.png>]")

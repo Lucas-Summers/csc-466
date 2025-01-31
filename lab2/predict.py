@@ -1,6 +1,6 @@
 import sys
 import pandas as pd
-from csv_reader import read_csv
+from csv_reader import read_csv, get_Xy
 from c45 import c45
 
 # try `python predict.py csv/nursery.csv trees/nursery_sample.json``
@@ -13,13 +13,15 @@ if __name__ == "__main__":
     json_file = sys.argv[2]
     
     domain, class_var, df = read_csv(csv_file)
+    X, y = get_Xy(class_var, df)
     tree = c45()
+
     tree.read_tree(json_file)
     
-    predictions = tree.predict(df.iloc[:, :-1])
+    predictions = tree.predict(X)
 
     if len(sys.argv) == 4 and sys.argv[3] == "eval":
-        ground_truth = df.iloc[:, -1]
+        ground_truth = y
         correct = (predictions == ground_truth).sum()
         total = len(ground_truth)
         incorrect = total - correct
