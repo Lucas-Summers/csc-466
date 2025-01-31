@@ -26,7 +26,7 @@ def c45(metric, threshold):
 
     return model
 
-def nfold(df, hyps, encoder, n=10):
+def nfold(df, hyps, encoder, class_var, n=10):
     '''
     Perform n-fold cross validation on the given dataset
     Returns the overall accuracy and confusion matrix
@@ -46,7 +46,7 @@ def nfold(df, hyps, encoder, n=10):
         model.fit(tr_X, tr_y)
 
         predictions = model.predict(ts_X)
-        ground_truth = tr_y
+        ground_truth = ts_y
 
         if encoder is not None:
             ground_truth = encoder.categories_[-1][ground_truth.astype(int)]
@@ -80,7 +80,7 @@ def read_hyps(hyps_file):
     
     return (val_dict["InfoGain"], val_dict["Ratio"])
 
-def grid_search(df, hyps_file, encoder):
+def grid_search(df, hyps_file, encoder, class_var):
     best_accuracy = 0
     best_confusion_matrix = None
     best_params = None
@@ -91,7 +91,7 @@ def grid_search(df, hyps_file, encoder):
     pbar = tqdm(info_gains)
     for thresh in pbar:
         pbar.set_description(f"Info Gain: {thresh}")
-        acc, confusion_matrix = nfold(df, ("info_gain", thresh), encoder)
+        acc, confusion_matrix = nfold(df, ("info_gain", thresh), encoder, class_var)
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
@@ -102,7 +102,7 @@ def grid_search(df, hyps_file, encoder):
     pbar = tqdm(ratios)
     for thresh in pbar:
         pbar.set_description(f"Gain Ratio: {thresh}")
-        acc, confusion_matrix = nfold(df, ("gain_ratio", thresh), encoder)
+        acc, confusion_matrix = nfold(df, ("gain_ratio", thresh), encoder, class_var)
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
@@ -127,7 +127,7 @@ if __name__ == "__main__":
             encoder = OrdinalEncoder()
             df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
 
-        acc, conf_mat, params = grid_search(df, sys.argv[2], encoder)
+        acc, conf_mat, params = grid_search(df, sys.argv[2], encoder, class_var)
         print(f"Best parameters: {params}")
         print(f"Best accuracy: {acc}")
         print("Confusion matrix:")
@@ -139,7 +139,7 @@ if __name__ == "__main__":
             
             if categorical_columns:
                 df[categorical_columns] = encoder.inverse_transform(df[categorical_columns])
-            print(ev_X.columns, ev_y.unique())
-            save_tree(model, ev_X.columns, ev_y.unique(), sys.argv[3])
+
+            save_tree(model, ev_X.columns, df[class_var].unique(), sys.argv[3])
     else:
         print("Usage: python crossValSK.py <CSVFile> <HypsFile> [<save_best_tree.png>]")
