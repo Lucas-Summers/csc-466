@@ -1,12 +1,16 @@
+# 466 Lab 2
 Lucas Summers (lsumme01@calpoly.edu)
 Xiuyuan Qiu (xiqiu@calpoly.edu)
 
+## Requirements
 ```
 pandas
 tqdm
 scikit-learn
 matplotlib
 ```
+If not already installed, run `pip install -r requirements.txt`.
+
 ## Test Commands (needs `nursery.csv` in `csv/`)
 ```
 python crossVal.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.json
