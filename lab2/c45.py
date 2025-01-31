@@ -224,6 +224,30 @@ class c45:
         except Exception as e:
             print("Error reading tree from", filename, ":", e)
 
+    def tree_size(self):
+        '''
+        Returns the number of nodes in the tree
+        '''
+        if self.tree is None:
+            print("Tree is not trained, call fit() or read_tree() first")
+            return None
+        else:
+            if "leaf" in self.tree:
+                return 1
+            return self.count_nodes(self.tree["node"])
+        
+    def count_nodes(self, node):
+        '''
+        Recursively counts the number of nodes in the tree
+        '''
+        ct = 1
+        for edge in node["edges"]:
+            if "leaf" in edge["edge"]:
+                ct += 1
+            else:
+                ct += self.count_nodes(edge["edge"]["node"])
+        return ct
+
     def to_graphviz_dot(self):
         '''
         Returns the tree in dot format, to be used with graphviz.

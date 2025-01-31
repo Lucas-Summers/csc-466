@@ -1,3 +1,4 @@
+import math
 from csv_reader import read_csv, get_Xy
 from c45 import c45
 import json
@@ -7,7 +8,7 @@ import pandas as pd
 
 # try it out with `python crossVal.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.json`
 
-def nfold(csv_file, hyps, n=10):
+def nfold(csv_file, hyps, pbar, n=10):
     '''
     Perform n-fold cross validation on the given dataset
     Returns the overall accuracy and confusion matrix
@@ -35,8 +36,13 @@ def nfold(csv_file, hyps, n=10):
         accuracy = correct / total
         # error_rate = 1 - accuracy
 
+        # penalize larger trees
+        # target_tree_size = 30
+        # if model.tree_size() > target_tree_size:
+        #     accuracy /= math.log(model.tree_size(), target_tree_size)
+ 
         confusion_matrix = pd.crosstab(
-            ground_truth, predictions, rownames=["Actual"], colnames=["Predicted"]
+            predictions, ground_truth, rownames=["Actual"], colnames=["Predicted"], dropna=False
         )
 
         if overall_confusion_matrix is None:
@@ -44,6 +50,7 @@ def nfold(csv_file, hyps, n=10):
         else:
             overall_confusion_matrix += confusion_matrix
         accuracies.append(accuracy)
+        pbar.update(1)
 
     overall_accuracy = sum(accuracies) / n
 
@@ -63,28 +70,29 @@ def grid_search(csv_file, hyps_file):
     best_params = None
 
     info_gains, ratios = read_hyps(hyps_file)
-    
+
+    n = 10
     # info gain searches
-    pbar = tqdm(info_gains)
-    for thresh in pbar:
+    pbar = tqdm(total=len(info_gains) * n)
+    for thresh in info_gains:
         pbar.set_description(f"Info Gain: {thresh}")
-        acc, confusion_matrix = nfold(csv_file, ("info_gain", thresh))
+        acc, confusion_matrix = nfold(csv_file, ("info_gain", thresh), pbar, n)
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
             best_params = ("info_gain", thresh)
-        pbar.set_description(f"Info Gain: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+        pbar.set_postfix(acc=acc, best_acc=best_accuracy)
     
     # gain ratio searches
-    pbar = tqdm(ratios)
-    for thresh in pbar:
+    pbar = tqdm(total=len(ratios) * n)
+    for thresh in ratios:
         pbar.set_description(f"Gain Ratio: {thresh}")
-        acc, confusion_matrix = nfold(csv_file, ("gain_ratio", thresh))
+        acc, confusion_matrix = nfold(csv_file, ("gain_ratio", thresh), pbar, n)
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
             best_params = ("gain_ratio", thresh)
-        pbar.set_description(f"Gain Ratio: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+        pbar.set_postfix(acc=acc, best_acc=best_accuracy)
 
     return best_accuracy, best_confusion_matrix, best_params
 
@@ -97,9 +105,10 @@ if __name__ == "__main__":
         print(conf_mat)
         if len(sys.argv) == 4:
             domain, class_var, df = read_csv(sys.argv[1])
-            X, y = get_Xy(class_var, df)
+            eval_X, eval_y = get_Xy(class_var, df)
+
             model = c45(metric=params[0], threshold=params[1])
-            model.fit(X, y, sys.argv[1])
+            model.fit(eval_X, eval_y, sys.argv[1])
             model.save_tree(sys.argv[3])
             # print(model.to_graphviz_dot())
     else:
