@@ -1,0 +1,16 @@
+Lucas Summers (lsumme01@calpoly.edu)
+Xiuyuan Qiu (xiqiu@calpoly.edu)
+
+```
+pandas
+tqdm
+scikit-learn
+matplotlib
+```
+## Test Commands (needs `nursery.csv` in `csv/`)
+```
+python crossVal.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.json
+python crossValSK.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.png
+python induceC45.py csv/nursery.csv trees/nursery_test.json
+python predict.py csv/nursery.csv trees/nursery_sample.json
+```
