@@ -13,11 +13,14 @@ class c45:
         # for unique node ids when making a graphviz dot file
         self.id_ctr = 0 
     
-    def metric_score(self, X, y, attr):
+    def metric_score(self, X, y, attr, threshold=None):
+        '''
+        Selects the correct metric to use based on metric variable
+        '''
         if self.metric == "info_gain":
-            return self.info_gain(X, y, attr)
+            return self.info_gain(X, y, attr, threshold)
         elif self.metric == "gain_ratio":
-            return self.info_gain_ratio(X, y, attr)
+            return self.info_gain_ratio(X, y, attr, threshold)
         else:
             raise ValueError("Invalid metric given.")
 
@@ -42,7 +45,6 @@ class c45:
 
         tree = {"node": {"var": best_attr, "edges": []}}
         if best_threshold is not None:  # Numeric split
-            tree = {"node": {"var": best_attr, "edges": []}}
             left_mask = X[best_attr] <= best_threshold
             right_mask = X[best_attr] > best_threshold
 
@@ -72,16 +74,20 @@ class c45:
 
         for attr in X.columns:
             if X[attr].dtype in [np.float64, np.int64]:  # Numeric attribute
-                score = self.metric_score(X, y, attr)
-                if score > best_score:
-                    best_score = score
-                    best_attr = attr
-                    #best_threshold = threshold
+                thresholds = X[attr].sort_values().unique()
+                for i in range(1, len(thresholds)):
+                    threshold = (thresholds[i - 1] + thresholds[i]) / 2
+                    score = self.metric_score(X, y, attr, threshold)
+                    if score > best_score:
+                        best_score = score
+                        best_attr = attr
+                        best_threshold = threshold
             else: # Categorical attribute
                 score = self.metric_score(X, y, attr)
                 if score > best_score:
                     best_score = score
                     best_attr = attr
+                    best_threshold = None
         return best_attr, best_score, best_threshold
     
     def entropy(self, y):
@@ -91,66 +97,43 @@ class c45:
         probs = y.value_counts(normalize=True)
         return -sum(probs * np.log2(probs))
 
-    def info_gain(self, X, y, attr):
+    def info_gain(self, X, y, attr, threshold=None):
         '''
         Calculate information gain for a given attribute
         '''
-
         total_entropy = self.entropy(y)
 
-        if X[attr].dtype in [np.float64, np.int64]:  # Numeric attribute
-            # Numeric attributes require a split at a threshold (midpoint of sorted values)
-            thresholds = X[attr].sort_values().unique()
-            weighted_entropy = 0
-            
-            for i in range(1, len(thresholds)):  # Consider midpoints between sorted values
-                threshold = (thresholds[i - 1] + thresholds[i]) / 2
-                left_mask = X[attr] < threshold
-                right_mask = X[attr] >= threshold
+        if threshold is not None:  # Numeric attribute
+            left_mask = X[attr] <= threshold
+            right_mask = X[attr] > threshold
 
-                left_y, right_y = y[left_mask], y[right_mask]
-                weighted_entropy += (len(left_y) / len(y)) * self.entropy(left_y)
-                weighted_entropy += (len(right_y) / len(y)) * self.entropy(right_y)
-            return total_entropy - weighted_entropy
+            left_y, right_y = y[left_mask], y[right_mask]
+            weighted_entropy = (len(left_y) / len(y)) * self.entropy(left_y) + \
+                               (len(right_y) / len(y)) * self.entropy(right_y)
         else: # Categorical attribute
-            # For categorical attributes, we calculate entropy for each category
             values = X[attr].unique()
-            weighted_entropy = 0
-            for val in values:
-                subset = y[X[attr] == val]
-                weighted_entropy += len(subset) / len(y) * self.entropy(subset)
-            return total_entropy - weighted_entropy
+            weighted_entropy = sum((len(y[X[attr] == val]) / len(y)) * self.entropy(y[X[attr] == val]) for val in values)
 
-    def info_gain_ratio(self, X, y, attr):
+        return total_entropy - weighted_entropy
+
+    def info_gain_ratio(self, X, y, attr, threshold=None):
         '''
         Calculate information gain ratio for a given attribute
         '''
-        info_gain = self.info_gain(X, y, attr)
+        info_gain = self.info_gain(X, y, attr, threshold)
 
-         # Now calculate split information
-        if X[attr].dtype in [np.float64, np.int64]:  # Numeric attribute
-            # For numeric attributes, calculate the split information based on thresholds
-            thresholds = X[attr].sort_values().unique()
-            split_info = 0
-            
-            for i in range(1, len(thresholds)):  # Consider midpoints between sorted values
-                threshold = (thresholds[i - 1] + thresholds[i]) / 2
-                left_mask = X[attr] < threshold
-                right_mask = X[attr] >= threshold
+        if threshold is not None:  # Numeric attribute
+            left_mask = X[attr] <= threshold
+            right_mask = X[attr] > threshold
 
-                left_y, right_y = y[left_mask], y[right_mask]
-
-                # Calculate split information for this threshold
-                split_info += (len(left_y) / len(y)) * np.log2(len(left_y) / len(y))
-                split_info += (len(right_y) / len(y)) * np.log2(len(right_y) / len(y))
+            left_ratio = len(y[left_mask]) / len(y)
+            right_ratio = len(y[right_mask]) / len(y)
+            split_info = -sum(r * np.log2(r) for r in [left_ratio, right_ratio] if r > 0)
         else:  # Categorical attribute
-            # For categorical attributes, calculate split information based on categories
-            split_info = 0
-            for value in X[attr].unique():
-                subset = X[X[attr] == value]
-                split_info += (len(subset) / len(X)) * np.log2(len(subset) / len(X))
+            split_info = -sum((len(y[X[attr] == val]) / len(y)) * np.log2(len(y[X[attr] == val]) / len(y)) 
+                              for val in X[attr].unique())
 
-        return -(info_gain / split_info) if split_info != 0 else 0
+        return info_gain / split_info if split_info != 0 else 0
 
     def fit(self, X_train, y_train, filename):
         '''
