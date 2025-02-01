@@ -1,0 +1,165 @@
+{
+  "dataset": "csv/nursery.csv",
+  "node": {
+    "var": "health",
+    "edges": [
+      {
+        "edge": {
+          "value": "not_recom",
+          "leaf": {
+            "decision": "not_recom",
+            "p": 1.0
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "recommended",
+          "leaf": {
+            "decision": "priority",
+            "p": 0.5616297060340382
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "priority",
+          "node": {
+            "var": "has_nurs",
+            "edges": [
+              {
+                "edge": {
+                  "value": "less_proper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.6704119850187266
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "improper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.6641509433962264
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.9885057471264368
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "critical",
+                  "leaf": {
+                    "decision": "spec_prior",
+                    "p": 0.877892030848329
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "very_crit",
+                  "leaf": {
+                    "decision": "spec_prior",
+                    "p": 0.98828125
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "proper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.6477272727272727
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

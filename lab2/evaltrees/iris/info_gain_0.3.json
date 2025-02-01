@@ -1,0 +1,49 @@
+{
+  "dataset": "csv/iris.csv",
+  "node": {
+    "var": "petalLength",
+    "edges": [
+      {
+        "edge": {
+          "op": "<=",
+          "value": 2.5999999999999996,
+          "leaf": {
+            "decision": "Iris-setosa",
+            "p": 1.0
+          }
+        }
+      },
+      {
+        "edge": {
+          "op": ">",
+          "value": 2.5999999999999996,
+          "node": {
+            "var": "petalWidth",
+            "edges": [
+              {
+                "edge": {
+                  "op": "<=",
+                  "value": 1.75,
+                  "leaf": {
+                    "decision": "Iris-versicolor",
+                    "p": 0.9019607843137255
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "op": ">",
+                  "value": 1.75,
+                  "leaf": {
+                    "decision": "Iris-virginica",
+                    "p": 0.9743589743589743
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
