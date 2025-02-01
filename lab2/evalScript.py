@@ -103,10 +103,10 @@ def read_grid_search_results(json_file):
     return records
 
 if __name__ == "__main__":
-    CSVFiles = ["csv/iris.csv", "csv/letter-recog.csv", "csv/nursery.csv"]
+    CSVFiles = ["csv/nursery.csv"]
     for csv_file in CSVFiles:
-        info_gains = [0.6, 0.7, 0.8, 0.9]
-        ratios = [0.6, 0.7, 0.8, 0.9]
+        info_gains = [0.125]
+        ratios = [0.125]
         recs = grid_search(csv_file, info_gains, ratios, save_tree=True)
         save_dir = csv_save_dir(csv_file)
         json.dump(recs, open(f"{save_dir}grid_search.json", "a"))

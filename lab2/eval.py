@@ -31,8 +31,12 @@ def tree_size_eval():
             plt.figure()
             plt.plot([thresh[0] for thresh in info_gains], [thresh[1] for thresh in info_gains], label="Info Gain")
             plt.plot([thresh[0] for thresh in ratios], [thresh[1] for thresh in ratios], label="Gain Ratio")
+            # points
+            plt.scatter([thresh[0] for thresh in info_gains], [thresh[1] for thresh in info_gains])
+            plt.scatter([thresh[0] for thresh in ratios], [thresh[1] for thresh in ratios])
             plt.xlabel("Threshold")
             plt.ylabel("Tree Size")
+            plt.title("Tree Size")
             plt.legend()
             plt.savefig(f"{subdir_path}/tree_size.png")
 
@@ -58,19 +62,32 @@ def visualize():
                 zip_ratio.sort(key=lambda x: x[0])
                 
                 # plot and save
-                plt.figure(figsize=(12, 8))
+                plt.figure()
                 # line plot 
                 plt.plot([pair[0] for pair in zip_info], [pair[1] for pair in zip_info], label="Info Gain")
                 plt.plot([pair[0] for pair in zip_ratio], [pair[1] for pair in zip_ratio], label="Gain Ratio")
                 plt.xlabel("Threshold")
                 plt.ylabel("Accuracy")
                 plt.title("Grid Search Results")
-                # points, with x label
+                # points
                 plt.scatter([pair[0] for pair in zip_info], [pair[1] for pair in zip_info])
                 plt.scatter([pair[0] for pair in zip_ratio], [pair[1] for pair in zip_ratio])
 
                 plt.legend()
                 plt.savefig(f"{root}/grid_search.png")
 
-tree_size_eval()
-visualize()
+def print_one_point(subdir, metric, threshold):
+    # print the accuracy for a single point
+    val = read_grid_search_results(f"evaltrees/{subdir}/grid_search.json")
+    for rec in val:
+        if rec["params"][0] == metric and rec["params"][1] == threshold:
+            print(rec["acc"], rec["confusion_matrix"])
+            # tree size
+            model = c45()
+            model.read_tree(f"evaltrees/{subdir}/{metric}_{threshold}.json")
+            print("tree size", model.tree_size())
+            break
+        
+# tree_size_eval()
+# visualize()
+print_one_point("nursery", "info_gain", 0.2)
