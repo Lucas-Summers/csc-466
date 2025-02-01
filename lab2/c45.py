@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import json
+from collections import defaultdict
 
 class c45:
     def __init__(self, metric="info_gain", threshold=0.4):
@@ -202,7 +203,24 @@ class c45:
                             return (result["decision"], result["p"])
                     else:
                         return self.predict_row(row, edge["node"])
-        return None
+        # plurality voting
+        count_leaves = self.count_leaves(node)
+        max_class = max(count_leaves, key=count_leaves.get)
+        return max_class
+    
+    def count_leaves(self, node):
+        '''
+        Recursively counts the number of leaf nodes in the tree by decision
+        '''
+        leaf_classes = defaultdict(int)
+        for edge in node["edges"]:
+            if "leaf" in edge["edge"]:
+                leaf_classes[edge["edge"]["leaf"]["decision"]] += 1
+            else:
+                lc_dict = self.count_leaves(edge["edge"]["node"])
+                for k, v in lc_dict.items():
+                    leaf_classes[k] += v
+        return leaf_classes
 
     def save_tree(self, filename):
         '''
