@@ -1,7 +1,7 @@
 import os
 from c45 import c45
 import matplotlib.pyplot as plt
-from evalScript import read_grid_search_results
+from eval_cache import read_grid_search_results
 
 # create graphs for tree size and accuracy based on results in evaltrees directory
 
@@ -76,18 +76,21 @@ def visualize():
                 plt.legend()
                 plt.savefig(f"{root}/grid_search.png")
 
-def print_one_point(subdir, metric, threshold):
-    # print the accuracy for a single point
+# lookup a single point in the grid search results
+def get_one_point(subdir, metric, threshold):
     val = read_grid_search_results(f"evaltrees/{subdir}/grid_search.json")
     for rec in val:
         if rec["params"][0] == metric and rec["params"][1] == threshold:
-            print(rec["acc"], rec["confusion_matrix"])
             # tree size
             model = c45()
             model.read_tree(f"evaltrees/{subdir}/{metric}_{threshold}.json")
-            print("tree size", model.tree_size())
-            break
+            return rec["acc"], rec["confusion_matrix"], model.tree_size()
         
 # tree_size_eval()
 # visualize()
-print_one_point("nursery", "info_gain", 0.2)
+
+# acc, conf_mat, tree_size = get_one_point("iris", "gain_ratio", 0.1)
+# print(f"Accuracy: {acc}")
+# print(f"Tree Size: {tree_size}")
+# print("Confusion Matrix:")
+# print(conf_mat)
