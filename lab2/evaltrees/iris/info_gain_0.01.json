@@ -1,0 +1,175 @@
+{
+  "dataset": "csv/iris.csv",
+  "node": {
+    "var": "petalLength",
+    "edges": [
+      {
+        "edge": {
+          "op": "<=",
+          "value": 2.45,
+          "leaf": {
+            "decision": "Iris-setosa",
+            "p": 1.0
+          }
+        }
+      },
+      {
+        "edge": {
+          "op": ">",
+          "value": 2.45,
+          "node": {
+            "var": "petalWidth",
+            "edges": [
+              {
+                "edge": {
+                  "op": "<=",
+                  "value": 1.75,
+                  "node": {
+                    "var": "petalLength",
+                    "edges": [
+                      {
+                        "edge": {
+                          "op": "<=",
+                          "value": 4.95,
+                          "node": {
+                            "var": "sepalLength",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "op": "<=",
+                                  "value": 4.95,
+                                  "leaf": {
+                                    "decision": "Iris-virginica",
+                                    "p": 1.0
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "op": ">",
+                                  "value": 4.95,
+                                  "leaf": {
+                                    "decision": "Iris-versicolor",
+                                    "p": 1.0
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "op": ">",
+                          "value": 4.95,
+                          "node": {
+                            "var": "petalWidth",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "op": "<=",
+                                  "value": 1.55,
+                                  "leaf": {
+                                    "decision": "Iris-virginica",
+                                    "p": 1.0
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "op": ">",
+                                  "value": 1.55,
+                                  "node": {
+                                    "var": "sepalLength",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "op": "<=",
+                                          "value": 6.95,
+                                          "leaf": {
+                                            "decision": "Iris-versicolor",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "op": ">",
+                                          "value": 6.95,
+                                          "leaf": {
+                                            "decision": "Iris-virginica",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "op": ">",
+                  "value": 1.75,
+                  "node": {
+                    "var": "petalLength",
+                    "edges": [
+                      {
+                        "edge": {
+                          "op": "<=",
+                          "value": 4.85,
+                          "node": {
+                            "var": "sepalLength",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "op": "<=",
+                                  "value": 6.050000000000001,
+                                  "leaf": {
+                                    "decision": "Iris-versicolor",
+                                    "p": 1.0
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "op": ">",
+                                  "value": 6.050000000000001,
+                                  "leaf": {
+                                    "decision": "Iris-virginica",
+                                    "p": 1.0
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "op": ">",
+                          "value": 4.85,
+                          "leaf": {
+                            "decision": "Iris-virginica",
+                            "p": 1.0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "dataset": "csv/nursery.csv",
+  "node": {
+    "var": "health",
+    "edges": [
+      {
+        "edge": {
+          "value": "not_recom",
+          "leaf": {
+            "decision": "not_recom",
+            "p": 1.0
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "priority",
+          "leaf": {
+            "decision": "spec_prior",
+            "p": 0.5717218373107519
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "recommended",
+          "leaf": {
+            "decision": "priority",
+            "p": 0.560788328640901
+          }
+        }
+      }
+    ]
+  }
+}

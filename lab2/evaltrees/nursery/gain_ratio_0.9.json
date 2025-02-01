@@ -1,0 +1,7 @@
+{
+  "dataset": "csv/nursery.csv",
+  "leaf": {
+    "decision": "not_recom",
+    "p": 0.335562414266118
+  }
+}

@@ -4,8 +4,11 @@ from c45 import c45
 import pandas as pd
 import json
 import os
+import matplotlib.pyplot as plt
 
-
+'''
+script for caching the results of grid search into "evaltrees" directory
+'''
 def csv_save_dir(csv_file):
     return f"evaltrees/{csv_file.split('/')[-1].split('.')[0]}/"
 
@@ -92,13 +95,19 @@ def grid_search(csv_file, info_hyps, ratio_hyps, save_tree=False):
     return records
 
 def read_grid_search_results(json_file):
-    return json.load(open(json_file, "r"))
+    # each line is a different list of records
+    records = []
+    with open(json_file, "r") as f:
+        for line in f:
+            records.extend(json.loads(line))
+    return records
 
-CSVFiles = ["csv/iris.csv", "csv/letter-recog.csv", "csv/nursery.csv"]
-for csv_file in CSVFiles:
-    info_gains = [0.1, 0.2, 0.3, 0.4, 0.5]
-    ratios = [0.1, 0.2, 0.3, 0.4, 0.5]
-    recs = grid_search(csv_file, info_gains, ratios, save_tree=True)
-    save_dir = csv_save_dir(csv_file)
-    json.dump(recs, open(f"{save_dir}grid_search.json", "a"))
-    
+if __name__ == "__main__":
+    CSVFiles = ["csv/iris.csv", "csv/letter-recog.csv", "csv/nursery.csv"]
+    for csv_file in CSVFiles:
+        info_gains = [0.6, 0.7, 0.8, 0.9]
+        ratios = [0.6, 0.7, 0.8, 0.9]
+        recs = grid_search(csv_file, info_gains, ratios, save_tree=True)
+        save_dir = csv_save_dir(csv_file)
+        json.dump(recs, open(f"{save_dir}grid_search.json", "a"))
+        open(f"{save_dir}grid_search.json", "a").write("\n")
