@@ -14,7 +14,7 @@ If not already installed, run `pip install -r requirements.txt`.
 ## Test Commands (needs `nursery.csv` in `csv/`)
 ```
 python crossVal.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.json
-python crossValSK.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.png
+python crossValSKL.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.png
 python induceC45.py csv/nursery.csv trees/nursery_test.json
 python predict.py csv/nursery.csv trees/nursery_sample.json
 ```

@@ -7,7 +7,7 @@ from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.preprocessing import OrdinalEncoder
 import matplotlib.pyplot as plt
 
-# try it out with `python crossValSK.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.png`
+# try it out with `python crossValSKL.py csv/nursery.csv trees/hyp_sample.json trees/best_tree.png`
 
 def c45(metric, threshold):
     ''
@@ -36,6 +36,7 @@ def nfold(df, hyps, encoder, class_var, n=10):
     nth = len(shuffled) // n
     accuracies = []
     overall_confusion_matrix = None
+    total_pred, total_truth = [], []
     for i in range(n):
         test = shuffled.iloc[i*nth:(i+1)*nth]
         ts_X, ts_y = get_Xy(class_var, test)
@@ -58,17 +59,15 @@ def nfold(df, hyps, encoder, class_var, n=10):
         accuracy = correct / total
         # error_rate = 1 - accuracy
 
-        confusion_matrix = pd.crosstab(
-            ground_truth, predictions, rownames=["Actual"], colnames=["Predicted"]
-        )
+        total_pred.extend(predictions.tolist())
+        total_truth.extend(ground_truth.tolist())
 
-        if overall_confusion_matrix is None:
-            overall_confusion_matrix = confusion_matrix
-        else:
-            overall_confusion_matrix += confusion_matrix
         accuracies.append(accuracy)
 
     overall_accuracy = sum(accuracies) / n
+    overall_confusion_matrix = pd.crosstab(
+        total_pred, total_truth, rownames=["Predicted"], colnames=["Actual"], dropna=False
+    )
 
     return overall_accuracy, overall_confusion_matrix
 

@@ -19,6 +19,7 @@ def nfold(csv_file, hyps, pbar, n=10):
     nth = len(shuffled) // n
     accuracies = []
     overall_confusion_matrix = None
+    total_pred, total_truth = [], []
     for i in range(n):
         test = shuffled.iloc[i*nth:(i+1)*nth]
         ts_X, ts_y = get_Xy(class_var, test)
@@ -29,30 +30,25 @@ def nfold(csv_file, hyps, pbar, n=10):
         model.fit(tr_X, tr_y, csv_file)
         
         predictions = model.predict(ts_X)
-        ground_truth = ts_y
-        correct = (predictions == ground_truth).sum()
+        ground_truth = ts_y.tolist()
+
+        total_pred.extend(predictions)
+        total_truth.extend(ground_truth)
+
+        pred_df = pd.DataFrame({"predictions": predictions, "truth": ground_truth})
+        correct = pred_df[pred_df["predictions"] == pred_df["truth"]].shape[0]
         total = len(ground_truth)
         # incorrect = total - correct
         accuracy = correct / total
         # error_rate = 1 - accuracy
-
-        # penalize larger trees
-        # target_tree_size = 30
-        # if model.tree_size() > target_tree_size:
-        #     accuracy /= math.log(model.tree_size(), target_tree_size)
- 
-        confusion_matrix = pd.crosstab(
-            predictions, ground_truth, rownames=["Actual"], colnames=["Predicted"], dropna=False
-        )
-
-        if overall_confusion_matrix is None:
-            overall_confusion_matrix = confusion_matrix
-        else:
-            overall_confusion_matrix += confusion_matrix
+        
         accuracies.append(accuracy)
         pbar.update(1)
 
     overall_accuracy = sum(accuracies) / n
+    overall_confusion_matrix = pd.crosstab(
+        total_pred, total_truth, rownames=["Predicted"], colnames=["Actual"], dropna=False
+    )
 
     return overall_accuracy, overall_confusion_matrix
 
