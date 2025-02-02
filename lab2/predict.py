@@ -30,7 +30,6 @@ if __name__ == "__main__":
 
         print("Predictions for each input data point:")
         for i in range(len(predictions)):
-            #print("Truth:", true_y.iloc[i], ",", "Prediction:", preds[i], ",", "Correct?", true_y.iloc[i] == preds[i])
             print(predictions[i])
         print(f"Total number of records classified: {total}")
         print(f"Total number of records correctly classified: {correct}")
@@ -45,7 +44,6 @@ if __name__ == "__main__":
         )
         print(confusion_matrix)
     else:
-  #      for i in range(len(predictions)):
-            #print("Truth:", true_y.iloc[i], ",", "Prediction:", preds[i], ",", "Correct?", true_y.iloc[i] == preds[i])
- #           print(predictions[i])
-        print(tree.to_graphviz_dot())
+        for i in range(len(predictions)):
+            print(predictions[i])
+        #print(tree.to_graphviz_dot())
