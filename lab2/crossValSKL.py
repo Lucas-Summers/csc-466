@@ -98,15 +98,15 @@ def grid_search(df, hyps_file, encoder, class_var):
         pbar.set_description(f"Info Gain: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
     
     # gain ratio searches
-    #pbar = tqdm(ratios)
-    #for thresh in pbar:
-    #    pbar.set_description(f"Gain Ratio: {thresh}")
-    #    acc, confusion_matrix = nfold(df, ("gain_ratio", thresh), encoder, class_var)
-    #    if acc >= best_accuracy:
-    #        best_accuracy = acc
-    #        best_confusion_matrix = confusion_matrix
-    #        best_params = ("gain_ratio", thresh)
-    #    pbar.set_description(f"Gain Ratio: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
+    pbar = tqdm(ratios)
+    for thresh in pbar:
+       pbar.set_description(f"Gain Ratio: {thresh}")
+       acc, confusion_matrix = nfold(df, ("gain_ratio", thresh), encoder, class_var)
+       if acc >= best_accuracy:
+           best_accuracy = acc
+           best_confusion_matrix = confusion_matrix
+           best_params = ("gain_ratio", thresh)
+       pbar.set_description(f"Gain Ratio: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
 
     return best_accuracy, best_confusion_matrix, best_params
 
