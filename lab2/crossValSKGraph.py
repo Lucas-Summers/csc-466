@@ -85,18 +85,45 @@ def grid_search(df, hyps_file, encoder, class_var):
     best_params = None
 
     info_gains, ratios = read_hyps(hyps_file)
-    
+
+    accuracies = []
+    tree_sizes = []
     # info gain searches
     pbar = tqdm(info_gains)
     for thresh in pbar:
         pbar.set_description(f"Info Gain: {thresh}")
         acc, confusion_matrix = nfold(df, ("info_gain", thresh), encoder, class_var)
+
+        accuracies.append(acc)
+        clf = c45('info_gain', thresh)
+        clf.fit(df.drop(columns=[class_var]), df[class_var])
+        tree_size = clf.tree_.node_count  # Get the tree size (number of nodes)
+        tree_sizes.append(tree_size)
+
         if acc >= best_accuracy:
             best_accuracy = acc
             best_confusion_matrix = confusion_matrix
             best_params = ("info_gain", thresh)
         pbar.set_description(f"Info Gain: {thresh}, Curr Acc: {acc:.2f}, Best Acc: {best_accuracy:.2f}")
     
+     # Plot threshold vs. accuracy
+    plt.figure(figsize=(12, 6))
+
+    plt.subplot(1, 2, 1)
+    plt.plot(info_gains, accuracies, marker='o', color='b')
+    plt.title("Threshold vs. Accuracy")
+    plt.xlabel("Threshold")
+    plt.ylabel("Accuracy")
+    
+    # Plot threshold vs. tree size
+    plt.subplot(1, 2, 2)
+    plt.plot(info_gains, tree_sizes, marker='x', color='r')
+    plt.title("Threshold vs. Tree Size")
+    plt.xlabel("Threshold")
+    plt.ylabel("Tree Size (Number of Nodes)")
+
+    plt.tight_layout()
+    plt.show()
     # gain ratio searches
     #pbar = tqdm(ratios)
     #for thresh in pbar:
