@@ -1,0 +1,7 @@
+{
+  "dataset": "csv/letter-recog.csv",
+  "leaf": {
+    "decision": "D",
+    "p": 0.04122222222222222
+  }
+}

@@ -1,0 +1,972 @@
+{
+  "dataset": "csv/nursery.csv",
+  "node": {
+    "var": "health",
+    "edges": [
+      {
+        "edge": {
+          "value": "recommended",
+          "leaf": {
+            "decision": "priority",
+            "p": 0.5591177224929469
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "not_recom",
+          "leaf": {
+            "decision": "not_recom",
+            "p": 1.0
+          }
+        }
+      },
+      {
+        "edge": {
+          "value": "priority",
+          "node": {
+            "var": "has_nurs",
+            "edges": [
+              {
+                "edge": {
+                  "value": "proper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "node": {
+                            "var": "housing",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "value": "critical",
+                                  "leaf": {
+                                    "decision": "spec_prior",
+                                    "p": 0.9642857142857143
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "convenient",
+                                  "node": {
+                                    "var": "finance",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "value": "convenient",
+                                          "leaf": {
+                                            "decision": "priority",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "inconv",
+                                          "node": {
+                                            "var": "children",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "1",
+                                                  "node": {
+                                                    "var": "form",
+                                                    "edges": [
+                                                      {
+                                                        "edge": {
+                                                          "value": "complete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "foster",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "incomplete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "completed",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "2",
+                                                  "node": {
+                                                    "var": "form",
+                                                    "edges": [
+                                                      {
+                                                        "edge": {
+                                                          "value": "foster",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "complete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "incomplete",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "completed",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "3",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "more",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "less_conv",
+                                  "node": {
+                                    "var": "children",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "value": "more",
+                                          "leaf": {
+                                            "decision": "spec_prior",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "1",
+                                          "node": {
+                                            "var": "form",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "incomplete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "foster",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "complete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "completed",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "3",
+                                          "leaf": {
+                                            "decision": "spec_prior",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "2",
+                                          "node": {
+                                            "var": "form",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "complete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "completed",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "foster",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "incomplete",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "very_crit",
+                  "leaf": {
+                    "decision": "spec_prior",
+                    "p": 0.9897567221510883
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "critical",
+                  "leaf": {
+                    "decision": "spec_prior",
+                    "p": 0.8822768434670116
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "less_proper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "node": {
+                            "var": "housing",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "value": "convenient",
+                                  "node": {
+                                    "var": "finance",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "value": "convenient",
+                                          "leaf": {
+                                            "decision": "priority",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "inconv",
+                                          "node": {
+                                            "var": "children",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "1",
+                                                  "node": {
+                                                    "var": "form",
+                                                    "edges": [
+                                                      {
+                                                        "edge": {
+                                                          "value": "completed",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "complete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "incomplete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "foster",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "2",
+                                                  "node": {
+                                                    "var": "form",
+                                                    "edges": [
+                                                      {
+                                                        "edge": {
+                                                          "value": "completed",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "complete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "incomplete",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "foster",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "more",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "3",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "less_conv",
+                                  "node": {
+                                    "var": "children",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "value": "more",
+                                          "leaf": {
+                                            "decision": "spec_prior",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "1",
+                                          "node": {
+                                            "var": "form",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "foster",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "completed",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "complete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "incomplete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "2",
+                                          "node": {
+                                            "var": "form",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "foster",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "completed",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "complete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "incomplete",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "3",
+                                          "leaf": {
+                                            "decision": "spec_prior",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "critical",
+                                  "leaf": {
+                                    "decision": "spec_prior",
+                                    "p": 0.9310344827586207
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "value": "improper",
+                  "node": {
+                    "var": "parents",
+                    "edges": [
+                      {
+                        "edge": {
+                          "value": "usual",
+                          "leaf": {
+                            "decision": "priority",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "great_pret",
+                          "leaf": {
+                            "decision": "spec_prior",
+                            "p": 0.9880952380952381
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "value": "pretentious",
+                          "node": {
+                            "var": "housing",
+                            "edges": [
+                              {
+                                "edge": {
+                                  "value": "less_conv",
+                                  "node": {
+                                    "var": "children",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "value": "3",
+                                          "leaf": {
+                                            "decision": "spec_prior",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "more",
+                                          "leaf": {
+                                            "decision": "spec_prior",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "1",
+                                          "node": {
+                                            "var": "form",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "incomplete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "completed",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "foster",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "complete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "2",
+                                          "node": {
+                                            "var": "form",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "completed",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "foster",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "incomplete",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "complete",
+                                                  "leaf": {
+                                                    "decision": "priority",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "critical",
+                                  "leaf": {
+                                    "decision": "spec_prior",
+                                    "p": 0.9302325581395349
+                                  }
+                                }
+                              },
+                              {
+                                "edge": {
+                                  "value": "convenient",
+                                  "node": {
+                                    "var": "finance",
+                                    "edges": [
+                                      {
+                                        "edge": {
+                                          "value": "inconv",
+                                          "node": {
+                                            "var": "children",
+                                            "edges": [
+                                              {
+                                                "edge": {
+                                                  "value": "2",
+                                                  "node": {
+                                                    "var": "form",
+                                                    "edges": [
+                                                      {
+                                                        "edge": {
+                                                          "value": "incomplete",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "foster",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "complete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "completed",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "3",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "more",
+                                                  "leaf": {
+                                                    "decision": "spec_prior",
+                                                    "p": 1.0
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "edge": {
+                                                  "value": "1",
+                                                  "node": {
+                                                    "var": "form",
+                                                    "edges": [
+                                                      {
+                                                        "edge": {
+                                                          "value": "foster",
+                                                          "leaf": {
+                                                            "decision": "spec_prior",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "incomplete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "complete",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      },
+                                                      {
+                                                        "edge": {
+                                                          "value": "completed",
+                                                          "leaf": {
+                                                            "decision": "priority",
+                                                            "p": 1.0
+                                                          }
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "edge": {
+                                          "value": "convenient",
+                                          "leaf": {
+                                            "decision": "priority",
+                                            "p": 1.0
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}

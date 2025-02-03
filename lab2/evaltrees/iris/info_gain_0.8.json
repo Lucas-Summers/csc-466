@@ -1,0 +1,28 @@
+{
+  "dataset": "csv/iris.csv",
+  "node": {
+    "var": "petalLength",
+    "edges": [
+      {
+        "edge": {
+          "op": "<=",
+          "value": 2.45,
+          "leaf": {
+            "decision": "Iris-setosa",
+            "p": 1.0
+          }
+        }
+      },
+      {
+        "edge": {
+          "op": ">",
+          "value": 2.45,
+          "leaf": {
+            "decision": "Iris-versicolor",
+            "p": 0.5054945054945055
+          }
+        }
+      }
+    ]
+  }
+}

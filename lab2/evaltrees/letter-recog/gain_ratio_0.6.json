@@ -1,0 +1,91 @@
+{
+  "dataset": "csv/letter-recog.csv",
+  "node": {
+    "var": "xybar",
+    "edges": [
+      {
+        "edge": {
+          "op": "<=",
+          "value": 2.5,
+          "node": {
+            "var": "xbar",
+            "edges": [
+              {
+                "edge": {
+                  "op": "<=",
+                  "value": 7.5,
+                  "leaf": {
+                    "decision": "L",
+                    "p": 1.0
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "op": ">",
+                  "value": 7.5,
+                  "node": {
+                    "var": "xbox",
+                    "edges": [
+                      {
+                        "edge": {
+                          "op": "<=",
+                          "value": 7.5,
+                          "leaf": {
+                            "decision": "Y",
+                            "p": 1.0
+                          }
+                        }
+                      },
+                      {
+                        "edge": {
+                          "op": ">",
+                          "value": 7.5,
+                          "leaf": {
+                            "decision": "U",
+                            "p": 1.0
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      },
+      {
+        "edge": {
+          "op": ">",
+          "value": 2.5,
+          "node": {
+            "var": "width",
+            "edges": [
+              {
+                "edge": {
+                  "op": "<=",
+                  "value": 0.5,
+                  "leaf": {
+                    "decision": "I",
+                    "p": 1.0
+                  }
+                }
+              },
+              {
+                "edge": {
+                  "op": ">",
+                  "value": 0.5,
+                  "leaf": {
+                    "decision": "D",
+                    "p": 0.04258710999772262
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
