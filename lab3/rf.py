@@ -17,8 +17,10 @@ class RandomForest:
         for _ in range(self.numTrees):
             # Bootstrap sampling
             if self.numPoints < 1:
-                sample_size = int(self.numPoints * n_samples)
+                # numPoints is proportion of the dataset to sample from
+                sample_size = int(self.numPoints * n_samples) 
             else:
+                # numPoints is the number of samples to take
                 sample_size = min(self.numPoints, n_samples)
             indices = np.random.choice(n_samples, sample_size, replace=True)
             X_sample, y_sample = X.iloc[indices], y.iloc[indices]

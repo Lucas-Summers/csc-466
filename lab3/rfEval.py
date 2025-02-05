@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
 from sklearn.ensemble import RandomForestClassifier
+from tqdm import tqdm
+import time
 import sys
 
 
@@ -38,11 +40,13 @@ def grid_search(X_train, y_train, X_test, y_test, model_type, num_trees_range, n
     best_score = 0
     best_params = None
     
+    total_combinations = len(num_trees_range) * len(num_attributes_range) * len(num_data_points_range)
+    pbar = tqdm(total=total_combinations)
     # Perform grid search over hyperparameters
     for num_trees in num_trees_range:
         for num_attributes in num_attributes_range:
             for num_data_points in num_data_points_range:
-                print(num_trees, num_attributes, num_data_points)
+                pbar.set_description(f"tree={num_trees}, attr={num_attributes}, pts={num_data_points}")
                 if model_type == 'sklearn':
                     model = RandomForestClassifier(n_estimators=num_trees, 
                                                    max_features=num_attributes, 
@@ -52,14 +56,23 @@ def grid_search(X_train, y_train, X_test, y_test, model_type, num_trees_range, n
                 else:
                     model = RandomForest(num_attributes, num_data_points, num_trees)  # Custom RF
                 
+                start_time = time.time()
                 model.fit(X_train, y_train)
+                fit_time = time.time() - start_time
+
+                start_time = time.time()
                 test_pred = model.predict(X_test)
+                pred_time = time.time() - start_time
+
                 score = accuracy_score(y_test, test_pred)
+
+                pbar.set_postfix(score=score, fit_time=fit_time, pred_time=pred_time)
                 
                 if score > best_score:
                     best_score = score
                     best_model = model
                     best_params = (num_trees, num_attributes, num_data_points)
+                pbar.update(1)
     
     return best_model, best_params
 
