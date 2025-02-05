@@ -11,7 +11,7 @@ class RandomForest:
         self.threshold = threshold
         self.forest = []
 
-    def fit(self, X, y):
+    def fit(self, X, y, labels):
         """Train the Random Forest with bootstrapped datasets."""
         n_samples, n_features = X.shape
         for _ in range(self.numTrees):
@@ -23,20 +23,20 @@ class RandomForest:
                 # numPoints is the number of samples to take
                 sample_size = min(self.numPoints, n_samples)
             indices = np.random.choice(n_samples, sample_size, replace=True)
-            X_sample, y_sample = X.iloc[indices], y.iloc[indices]
+            X_sample, y_sample = X[indices], y[indices]
             
             # Randomly select subset of attributes
-            attributes = np.random.choice(X.columns, size=min(self.numAttrs, n_features), replace=False)
-            X_sample = X_sample[attributes]  # Select only chosen attributes
+            attribute_indices = np.random.choice(np.arange(n_features), size=min(self.numAttrs, n_features), replace=False)
+            X_sample = X_sample[:, attribute_indices]
             
             # Train a decision tree (C45 instance)
             tree = c45(metric=self.metric, threshold=self.threshold)
-            tree.fit(X_sample, y_sample, "random_forest_tree.json")
+            tree.fit(X_sample, y_sample, labels, "random_forest_tree.json")
             self.forest.append(tree)
 
-    def predict(self, X):
+    def predict(self, X, labels):
         """Predict the class labels for given data using majority voting."""
-        predictions = np.array([tree.predict(X) for tree in self.forest])  # Get predictions from all trees
+        predictions = np.array([tree.predict(X, labels) for tree in self.forest])  # Get predictions from all trees
         final_predictions = [self.majority_vote(preds) for preds in predictions.T]  # Majority vote per sample
         return final_predictions
 

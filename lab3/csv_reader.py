@@ -26,3 +26,11 @@ def get_Xy(class_var, df):
     y = df[class_var]
     X = df.drop(columns=[class_var])
     return X, y
+
+def get_Xy_as_np(class_var, df):
+    y = df[class_var]
+    X = df.drop(columns=[class_var])
+    attrs = X.columns.tolist()
+    X = X.to_numpy()
+    y = y.to_numpy()
+    return X, y, attrs

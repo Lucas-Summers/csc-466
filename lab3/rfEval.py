@@ -1,4 +1,4 @@
-from csv_reader import read_csv, get_Xy
+from csv_reader import read_csv, get_Xy_as_np
 from rf import RandomForest
 import pandas as pd
 import numpy as np
@@ -9,6 +9,8 @@ from sklearn.ensemble import RandomForestClassifier
 from tqdm import tqdm
 import time
 import sys
+
+# Try with `python rfEval.py csv/iris.csv 466`
 
 
 def get_hyperparameter_ranges(X):
@@ -35,7 +37,7 @@ def get_hyperparameter_ranges(X):
     return num_trees_range, num_attributes_range, num_data_points_range
 
 
-def grid_search(X_train, y_train, X_test, y_test, model_type, num_trees_range, num_attributes_range, num_data_points_range):
+def grid_search(X_train, y_train, X_test, y_test, attrs, model_type, num_trees_range, num_attributes_range, num_data_points_range):
     best_model = None
     best_score = 0
     best_params = None
@@ -57,11 +59,17 @@ def grid_search(X_train, y_train, X_test, y_test, model_type, num_trees_range, n
                     model = RandomForest(num_attributes, num_data_points, num_trees)  # Custom RF
                 
                 start_time = time.time()
-                model.fit(X_train, y_train)
+                if model_type == 'sklearn':
+                    model.fit(X_train, y_train)
+                else:
+                    model.fit(X_train, y_train, attrs)
                 fit_time = time.time() - start_time
 
                 start_time = time.time()
-                test_pred = model.predict(X_test)
+                if model_type == 'sklearn':
+                    test_pred = model.predict(X_test)
+                else:
+                    test_pred = model.predict(X_test, attrs)
                 pred_time = time.time() - start_time
 
                 score = accuracy_score(y_test, test_pred)
@@ -77,10 +85,13 @@ def grid_search(X_train, y_train, X_test, y_test, model_type, num_trees_range, n
     return best_model, best_params
 
 
-def evaluate_model(model, X_train, y_train, X_test, y_test, labels):
+def evaluate_model(model, X_train, y_train, X_test, y_test, labels, attrs, model_type):
 
     # Training evaluation
-    y_train_pred = model.predict(X_train)
+    if model_type == 'sklearn':
+        y_train_pred = model.predict(X_train)
+    else:
+        y_train_pred = model.predict(X_train, attrs)
     train_accuracy = accuracy_score(y_train, y_train_pred)
     train_conf_matrix = confusion_matrix(y_train, y_train_pred)
     train_conf_matrix_df = pd.DataFrame(train_conf_matrix, 
@@ -92,7 +103,10 @@ def evaluate_model(model, X_train, y_train, X_test, y_test, labels):
         train_precision, train_recall, train_f1 = None, None, None
     
     # Test evaluation
-    y_test_pred = model.predict(X_test)
+    if model_type == 'sklearn':
+        y_test_pred = model.predict(X_test)
+    else:
+        y_test_pred = model.predict(X_test, attrs)
     test_accuracy = accuracy_score(y_test, y_test_pred)
     test_conf_matrix = confusion_matrix(y_test, y_test_pred)
     test_conf_matrix_df = pd.DataFrame(test_conf_matrix, 
@@ -134,7 +148,7 @@ if __name__ == "__main__":
         encoder = OrdinalEncoder()
         df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
 
-    X, y = get_Xy(class_var, df)
+    X, y, attrs = get_Xy_as_np(class_var, df)
     
     # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -143,10 +157,10 @@ if __name__ == "__main__":
     num_trees_range, num_attributes_range, num_data_points_range = get_hyperparameter_ranges(X)
 
     # Grid search to find the best model
-    best_model, best_params = grid_search(X_train, y_train, X_test, y_test, sys.argv[2], num_trees_range, num_attributes_range, num_data_points_range)
+    best_model, best_params = grid_search(X_train, y_train, X_test, y_test, attrs, sys.argv[2], num_trees_range, num_attributes_range, num_data_points_range)
 
     # Evaluate the best model
-    evaluation_results = evaluate_model(best_model, X_train, y_train, X_test, y_test, labels)
+    evaluation_results = evaluate_model(best_model, X_train, y_train, X_test, y_test, labels, attrs, sys.argv[2])
 
     # Output results
     print(f"Selected Method: {sys.argv[2]}")
