@@ -34,7 +34,7 @@ class c45:
             return {"leaf": {"decision": y.iloc[0], "p": 1.0}}
         
         if X.empty or len(X.columns) == 0:
-            decision = y.value_counts.idxmax()
+            decision = y.value_counts().idxmax()
             prob = y.value_counts(normalize=True).iloc[0]
             return {"leaf": {"decision": decision, "p": prob}}
 
