@@ -13,6 +13,7 @@ class RandomForest:
 
     def fit(self, X, y, labels):
         """Train the Random Forest with bootstrapped datasets."""
+        np.random.seed(42)  # For reproducibility
         n_samples, n_features = X.shape
         for _ in range(self.numTrees):
             # Bootstrap sampling
@@ -26,12 +27,16 @@ class RandomForest:
             X_sample, y_sample = X[indices], y[indices]
             
             # Randomly select subset of attributes
-            attribute_indices = np.random.choice(np.arange(n_features), size=min(self.numAttrs, n_features), replace=False)
+            attribute_indices = np.random.choice(n_features, size=min(self.numAttrs, n_features), replace=False)
             X_sample = X_sample[:, attribute_indices]
+            
+            attribute_indices = list(attribute_indices)
+            attribute_indices.sort()
+            label_sample = [labels[i] for i in attribute_indices]
             
             # Train a decision tree (C45 instance)
             tree = c45(metric=self.metric, threshold=self.threshold)
-            tree.fit(X_sample, y_sample, labels, "random_forest_tree.json")
+            tree.fit(X_sample, y_sample, label_sample, "random_forest_tree.json")
             self.forest.append(tree)
 
     def predict(self, X, labels):
@@ -45,5 +50,6 @@ class RandomForest:
             counter = Counter(preds)
             max_count = max(counter.values())
             top_classes = [cls for cls, count in counter.items() if count == max_count]
+            # print(preds, max_count, top_classes, min(top_classes))
             return min(top_classes)  # Break ties by choosing the smallest class
 
