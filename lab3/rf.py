@@ -1,6 +1,7 @@
 from c45 import c45 
 import numpy as np
 from collections import Counter
+import json
 
 class RandomForest:
     def __init__(self, numAttrs, numPoints, numTrees, metric="info_gain", threshold=0.4):
@@ -28,10 +29,9 @@ class RandomForest:
             
             # Randomly select subset of attributes
             attribute_indices = np.random.choice(n_features, size=min(self.numAttrs, n_features), replace=False)
+
+            # This will reorder the columns of X_sample, but that's fine since label_sample is also reordered
             X_sample = X_sample[:, attribute_indices]
-            
-            attribute_indices = list(attribute_indices)
-            attribute_indices.sort()
             label_sample = [labels[i] for i in attribute_indices]
             
             # Train a decision tree (C45 instance)
@@ -39,9 +39,9 @@ class RandomForest:
             tree.fit(X_sample, y_sample, label_sample, "random_forest_tree.json")
             self.forest.append(tree)
 
-    def predict(self, X, labels):
+    def predict(self, X, labels, verbose=False):
         """Predict the class labels for given data using majority voting."""
-        predictions = np.array([tree.predict(X, labels) for tree in self.forest])  # Get predictions from all trees
+        predictions = np.array([tree.predict(X, labels, verbose=verbose) for tree in self.forest])  # Get predictions from all trees
         final_predictions = [self.majority_vote(preds) for preds in predictions.T]  # Majority vote per sample
         return final_predictions
 
@@ -53,3 +53,21 @@ class RandomForest:
             # print(preds, max_count, top_classes, min(top_classes))
             return min(top_classes)  # Break ties by choosing the smallest class
 
+    def export(self, filename):
+        """Export the Random Forest to a JSON file."""
+        with open(filename, "w") as f:
+            f.write("[")
+            for tree in self.forest:
+                f.write(json.dumps(tree.tree))
+                f.write(",\n")
+            f.write("]")
+
+    def load_forest(self, filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+            forest = []
+            for js in data:
+                tree = c45()
+                tree.tree = js
+                forest.append(tree)
+            self.forest = forest

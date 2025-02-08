@@ -156,7 +156,7 @@ class c45:
         self.tree = self.build_tree(X_train, y_train, labels)
         self.tree = {"dataset": filename, **self.tree}
     
-    def predict(self, X_test, labels, prob=False):
+    def predict(self, X_test, labels, prob=False, verbose=False):
         '''
         Predicts the class for each row in the given np array. Expects
         a dataframe with labeled columns. 
@@ -167,6 +167,8 @@ class c45:
         if self.tree is None:
             print("Tree is not trained, call fit() or read_tree() first")
 
+        if verbose:
+            print("Predicting", "with tree", self.tree, "labels", labels)
         # iterate and build a list of predictions
         result = []
         for index in range(X_test.shape[0]):
