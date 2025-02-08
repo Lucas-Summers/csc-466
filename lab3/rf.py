@@ -1,10 +1,11 @@
 from c45 import c45 
 import numpy as np
-from collections import Counter
 import json
+import concurrent.futures
+from joblib import Parallel, delayed
 
 class RandomForest:
-    def __init__(self, numAttrs, numPoints, numTrees, metric="info_gain", threshold=0.4):
+    def __init__(self, numAttrs, numPoints, numTrees, metric="info_gain", threshold=0.1):
         self.numAttrs = numAttrs
         self.numPoints = numPoints
         self.numTrees = numTrees
@@ -12,18 +13,13 @@ class RandomForest:
         self.threshold = threshold
         self.forest = []
 
-    def fit(self, X, y, labels):
+    def fit_regular(self, X, y, labels):
         """Train the Random Forest with bootstrapped datasets."""
         np.random.seed(42)  # For reproducibility
         n_samples, n_features = X.shape
         for _ in range(self.numTrees):
             # Bootstrap sampling
-            if self.numPoints < 1:
-                # numPoints is proportion of the dataset to sample from
-                sample_size = int(self.numPoints * n_samples) 
-            else:
-                # numPoints is the number of samples to take
-                sample_size = min(self.numPoints, n_samples)
+            sample_size = int(self.numPoints * n_samples) if self.numPoints < 1 else min(self.numPoints, n_samples)
             indices = np.random.choice(n_samples, sample_size, replace=True)
             X_sample, y_sample = X[indices], y[indices]
             
@@ -32,26 +28,59 @@ class RandomForest:
 
             # This will reorder the columns of X_sample, but that's fine since label_sample is also reordered
             X_sample = X_sample[:, attribute_indices]
-            label_sample = [labels[i] for i in attribute_indices]
+            #label_sample = [labels[i] for i in attribute_indices]
+            label_sample = np.array(labels)[attribute_indices]
             
             # Train a decision tree (C45 instance)
             tree = c45(metric=self.metric, threshold=self.threshold)
             tree.fit(X_sample, y_sample, label_sample, "random_forest_tree.json")
             self.forest.append(tree)
 
+    def fit(self, X, y, labels):
+        """Train the Random Forest with bootstrapped datasets in parallel."""
+        np.random.seed(42)  # For reproducibility
+        n_samples, n_features = X.shape
+
+        # Parallel execution of tree training using joblib
+        trees = Parallel(n_jobs=-1)(delayed(self._train_tree)(X, y, labels, n_samples, n_features) for _ in range(self.numTrees))
+        self.forest.extend(trees)
+
+    def _train_tree(self, X, y, labels, n_samples, n_features):
+        """Train a single decision tree and return it."""
+        sample_size = int(self.numPoints * n_samples) if self.numPoints < 1 else min(self.numPoints, n_samples)
+        indices = np.random.choice(n_samples, sample_size, replace=True)
+        X_sample, y_sample = X[indices], y[indices]
+
+        # Randomly select subset of attributes
+        attribute_indices = np.random.choice(n_features, size=min(self.numAttrs, n_features), replace=False)
+
+        # Reorder the columns of X_sample (based on selected attributes)
+        X_sample = X_sample[:, attribute_indices]
+        label_sample = np.array(labels)[attribute_indices]
+
+        # Train the tree
+        tree = c45(metric=self.metric, threshold=self.threshold)
+        tree.fit(X_sample, y_sample, label_sample, "random_forest_tree.json")
+        return tree
+
+    def predict_regular(self, X, labels, verbose=False):
+        """Predict the class labels for given data using majority voting."""
+        #predictions = np.array([tree.predict(X, labels, verbose=verbose) for tree in self.forest])  # Get predictions from all trees
+        #final_predictions = [self.majority_vote(preds) for preds in predictions.T]  # Majority vote per sample
+        #return final_predictions
+        predictions = np.vstack([tree.predict(X, labels, verbose=verbose) for tree in self.forest])
+        return np.apply_along_axis(self.majority_vote, axis=0, arr=predictions)
+
     def predict(self, X, labels, verbose=False):
         """Predict the class labels for given data using majority voting."""
-        predictions = np.array([tree.predict(X, labels, verbose=verbose) for tree in self.forest])  # Get predictions from all trees
-        final_predictions = [self.majority_vote(preds) for preds in predictions.T]  # Majority vote per sample
-        return final_predictions
+        predictions = np.vstack(Parallel(n_jobs=-1)(delayed(tree.predict)(X, labels, verbose=verbose) for tree in self.forest))
+        return np.apply_along_axis(self.majority_vote, axis=0, arr=predictions)
 
     def majority_vote(self, preds):
-            """Resolve ties by choosing the smallest lexicographically."""
-            counter = Counter(preds)
-            max_count = max(counter.values())
-            top_classes = [cls for cls, count in counter.items() if count == max_count]
-            # print(preds, max_count, top_classes, min(top_classes))
-            return min(top_classes)  # Break ties by choosing the smallest class
+        """Resolve ties by choosing the smallest lexicographically."""
+        uniq, counts = np.unique(preds, return_counts=True)
+        max_count = counts.max()
+        return uniq[counts == max_count].min()
 
     def export(self, filename):
         """Export the Random Forest to a JSON file."""

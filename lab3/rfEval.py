@@ -12,7 +12,6 @@ import sys
 
 # Try with `python rfEval.py csv/iris.csv 466`
 
-
 def get_hyperparameter_ranges(X):
     num_attributes = X.shape[1]
     
@@ -52,9 +51,9 @@ def grid_search(X_train, y_train, X_test, y_test, attrs, model_type, num_trees_r
                 if model_type == 'sklearn':
                     model = RandomForestClassifier(n_estimators=num_trees, 
                                                    max_features=num_attributes, 
-                                                   max_samples=(1.0-num_data_points),
+                                                   max_samples=num_data_points,
                                                    criterion="entropy", # info gain
-                                                   min_impurity_decrease=0.01)
+                                                   min_impurity_decrease=0.1)
                 else:
                     model = RandomForest(num_attributes, num_data_points, num_trees)  # Custom RF
                 
@@ -141,6 +140,7 @@ if __name__ == "__main__":
 
     # Load dataset
     domain, class_var, df = read_csv(sys.argv[1])
+    class_var = class_var.strip('"').strip("'").strip() # needed because of heart dataset
     
     labels = np.unique(df[class_var])
     categorical_columns = df.select_dtypes(include=["object"]).columns.tolist()
@@ -168,7 +168,7 @@ if __name__ == "__main__":
     print(f"NumTrees: {num_trees_range}")
     print(f"NumAttributes: {num_attributes_range}")
     print(f"NumDataPoints: {num_data_points_range}")
-    print(f"Best Hyperparameters: {best_params}")
+    print(f"Best Hyperparameters: # of Trees: {best_params[0]}, # of Attributes: {best_params[1]}, # of Data Points: {best_params[2]*100}%")
     
     print("\nTraining Accuracy:", evaluation_results["train_accuracy"])
     print("Training Confusion Matrix:\n", evaluation_results["train_conf_matrix"])
