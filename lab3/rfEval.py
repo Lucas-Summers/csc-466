@@ -4,10 +4,12 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OrdinalEncoder
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_recall_fscore_support, ConfusionMatrixDisplay
 from sklearn.ensemble import RandomForestClassifier
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 import time
+import os
 import sys
 
 # Try with `python rfEval.py csv/iris.csv 466`
@@ -130,6 +132,13 @@ def evaluate_model(model, X_train, y_train, X_test, y_test, labels, attrs, model
         "test_f1": test_f1
     }
 
+def render_confusion_matrix(conf_matrix, labels, save_dir, filename):
+    test_cm = ConfusionMatrixDisplay(conf_matrix.to_numpy(), display_labels=labels)
+    fig, ax = plt.subplots(figsize=(10,10))
+    os.makedirs(save_dir, exist_ok=True)
+    filename = os.path.join(save_dir, filename)
+    test_cm.plot(ax=ax, cmap=plt.cm.plasma).figure_.savefig(filename)
+
 
 if __name__ == "__main__":
     
@@ -163,6 +172,10 @@ if __name__ == "__main__":
     evaluation_results = evaluate_model(best_model, X_train, y_train, X_test, y_test, labels, attrs, sys.argv[2])
 
     # Output results
+    # csv_name = sys.argv[1].split("/")[-1].split(".")[0]
+    # render_confusion_matrix(evaluation_results["test_conf_matrix"], labels, "plt", f"{csv_name}_{sys.argv[2]}_test.png")
+    # render_confusion_matrix(evaluation_results["train_conf_matrix"], labels, "plt", f"{csv_name}_{sys.argv[2]}_train.png")
+
     print(f"Selected Method: {sys.argv[2]}")
     print(f"Hyperparameter ranges tested:")
     print(f"NumTrees: {num_trees_range}")
