@@ -92,7 +92,7 @@ def evaluate_model(model, X_train, y_train, X_test, y_test, labels, attrs, model
     else:
         y_train_pred = model.predict(X_train, attrs)
     train_accuracy = accuracy_score(y_train, y_train_pred)
-    train_conf_matrix = confusion_matrix(y_train, y_train_pred)
+    train_conf_matrix = confusion_matrix(y_train, y_train_pred, labels=range(len(labels)))
     train_conf_matrix_df = pd.DataFrame(train_conf_matrix, 
                                         index=[f"Actual {label}" for label in labels], 
                                         columns=[f"Predicted {label}" for label in labels])
@@ -107,7 +107,7 @@ def evaluate_model(model, X_train, y_train, X_test, y_test, labels, attrs, model
     else:
         y_test_pred = model.predict(X_test, attrs)
     test_accuracy = accuracy_score(y_test, y_test_pred)
-    test_conf_matrix = confusion_matrix(y_test, y_test_pred)
+    test_conf_matrix = confusion_matrix(y_test, y_test_pred, labels=range(len(labels)))
     test_conf_matrix_df = pd.DataFrame(test_conf_matrix, 
                                        index=[f"Actual {label}" for label in labels], 
                                        columns=[f"Predicted {label}" for label in labels])
