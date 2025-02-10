@@ -5,7 +5,7 @@ from collections import defaultdict
 
 class c45:
     """
-    C45 class from lab 2
+    C45 class from lab 2 (optimized with vectorized operations)
     """
     def __init__(self, metric="info_gain", threshold=0.1):
         assert metric in ["info_gain", "gain_ratio"]
@@ -32,10 +32,6 @@ class c45:
         '''
         Returns the proportion of the most common class in y
         '''
-        #decision = uniq[counts.argmax()]
-        #normalized_counts = counts / counts.sum()
-        #prob = max(normalized_counts)
-        #return prob, decision
         uniq, counts = np.unique(y, return_counts=True)
         max_idx = np.argmax(counts)
         prob = counts[max_idx] / counts.sum()
@@ -61,7 +57,6 @@ class c45:
         tree = {"node": {"var": labels[best_attr], "edges": []}}
         if best_threshold is not None:  # Numeric split
             left_mask = X[:, best_attr] <= best_threshold
-            #right_mask = X[:, best_attr] > best_threshold
             right_mask = ~left_mask
 
             left_subtree = self.build_tree(X[left_mask], y[left_mask], labels)
@@ -73,10 +68,7 @@ class c45:
             ])
         else:  # Categorical split
             unique_vals, indices = np.unique(X[:, best_attr], return_inverse=True)  # Get unique values and their indices
-            #for val in np.unique(X[:, best_attr]):
             for val in unique_vals:
-                #subset_X = X[X[:, best_attr] == val] # np.delete(X[X[:, best_attr] == val], 1, best_attr)
-                #subset_y = y[X[:, best_attr] == val]
                 mask = indices == np.where(unique_vals == val)[0][0]  # Faster than X[:, best_attr] == val
                 subset_X, subset_y = X[mask], y[mask]
 
@@ -128,15 +120,12 @@ class c45:
 
         if threshold is not None:  # Numeric attribute
             left_mask = X[:, attr] <= threshold
-            #right_mask = X[:, attr] > threshold
             right_mask = ~left_mask
 
             left_y, right_y = y[left_mask], y[right_mask]
             weighted_entropy = (len(left_y) / len(y)) * self.entropy(left_y) + \
                                (len(right_y) / len(y)) * self.entropy(right_y)
         else: # Categorical attribute
-            #values = np.unique(X[:, attr])
-            #weighted_entropy = np.sum((len(y[X[:, attr] == val]) / len(y)) * self.entropy(y[X[:, attr] == val]) for val in values)
             values, counts = np.unique(X[:, attr], return_counts=True)
             probs = counts / len(y)
             weighted_entropy = np.sum(probs * self.entropy(y[X[:, attr] == val]) for val in values)
@@ -151,17 +140,12 @@ class c45:
 
         if threshold is not None:  # Numeric attribute
             left_mask = X[:, attr] <= threshold
-            #right_mask = X[:, attr] > threshold
             right_mask = ~left_mask
 
-            #left_ratio = len(y[left_mask]) / len(y)
-            #right_ratio = len(y[right_mask]) / len(y)
             left_ratio = np.sum(left_mask) / len(y)
             right_ratio = 1 - left_ratio
             split_info = -np.sum(r * np.log2(r) for r in [left_ratio, right_ratio] if r > 0)
         else:  # Categorical attribute
-            #split_info = -sum((len(y[X[:, attr] == val]) / len(y)) * np.log2(len(y[X[:, attr] == val]) / len(y)) 
-                              #for val in np.unique(X[:, attr]))
             values, counts = np.unique(X[:, attr], return_counts=True)
             probs = counts / len(y)
             split_info = -np.sum(probs * np.log2(probs))

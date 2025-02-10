@@ -15,6 +15,9 @@ import sys
 # Try with `python rfEval.py csv/iris.csv 466`
 
 def get_hyperparameter_ranges(X):
+    '''
+    Generate hyperparameter ranges to use for grid search based on the provided dataset
+    '''
     num_attributes = X.shape[1]
     
     # Determine NumAttributes range
@@ -39,6 +42,9 @@ def get_hyperparameter_ranges(X):
 
 
 def grid_search(X_train, y_train, X_test, y_test, attrs, model_type, num_trees_range, num_attributes_range, num_data_points_range):
+    '''
+    Perform a grid search for either 466 or sklearn Random Forest classifier using provided hyperparam ranges
+    '''
     best_model = None
     best_score = 0
     best_params = None
@@ -87,6 +93,9 @@ def grid_search(X_train, y_train, X_test, y_test, attrs, model_type, num_trees_r
 
 
 def evaluate_model(model, X_train, y_train, X_test, y_test, labels, attrs, model_type):
+    '''
+    Generate evaluation metrics for either 466 or sklearn Random Forest classifier on both test and training data
+    '''
 
     # Training evaluation
     if model_type == 'sklearn':
@@ -133,6 +142,9 @@ def evaluate_model(model, X_train, y_train, X_test, y_test, labels, attrs, model
     }
 
 def render_confusion_matrix(conf_matrix, labels, save_dir, filename):
+    '''
+    Create an image of the provided confusion matrix
+    '''
     test_cm = ConfusionMatrixDisplay(conf_matrix.to_numpy(), display_labels=labels)
     fig, ax = plt.subplots(figsize=(10,10))
     os.makedirs(save_dir, exist_ok=True)

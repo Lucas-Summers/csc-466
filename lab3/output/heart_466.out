@@ -1,0 +1,23 @@
+Selected Method: 466
+Hyperparameter ranges tested:
+NumTrees: [60, 120, 240, 500, 1000]
+NumAttributes: [1, 2, 3, 4, 5]
+NumDataPoints: [0.1, 0.15, 0.2]
+Best Hyperparameters: # of Trees: 120, # of Attributes: 5, # of Data Points: 10.0%
+
+Training Accuracy: 0.8732970027247956
+Training Confusion Matrix:
+           Predicted 0  Predicted 1
+Actual 0          277           56
+Actual 1           37          364
+Test Accuracy: 0.8804347826086957
+Test Confusion Matrix:
+           Predicted 0  Predicted 1
+Actual 0           69            8
+Actual 1           14           93
+
+Precision/Recall/F1 (Train):
+Precision: 0.8666666666666667, Recall: 0.9077306733167082, F1: 0.8867235079171741
+
+Precision/Recall/F1 (Test):
+Precision: 0.9207920792079208, Recall: 0.8691588785046729, F1: 0.8942307692307693

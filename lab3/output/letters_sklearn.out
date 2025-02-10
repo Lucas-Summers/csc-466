@@ -1,0 +1,75 @@
+Selected Method: sklearn
+Hyperparameter ranges tested:
+NumTrees: [60, 120, 240, 500, 1000]
+NumAttributes: [1, 2, 3, 4, 5]
+NumDataPoints: [0.05, 0.1, 0.2, 0.25]
+Best Hyperparameters: # of Trees: 1000, # of Attributes: 3, # of Data Points: 5.0%
+
+Training Accuracy: 0.6205
+Training Confusion Matrix:
+           Predicted A  Predicted B  ...  Predicted Y  Predicted Z
+Actual A          558            1  ...            2            0
+Actual B            2          438  ...            0           16
+Actual C            0            1  ...            5            2
+Actual D           15           43  ...            0            0
+Actual E            1           17  ...            0           33
+Actual F            0           17  ...            9            1
+Actual G           18           18  ...            0           42
+Actual H           11           28  ...            2            0
+Actual I            3           44  ...            0           33
+Actual J            1           47  ...            0            1
+Actual K           20            8  ...            0            0
+Actual L           41           12  ...            0            0
+Actual M           53           12  ...            0            0
+Actual N            4            7  ...            0            0
+Actual O           17           22  ...            0            0
+Actual P            0           17  ...            1            0
+Actual Q           32           42  ...            0            1
+Actual R            2           60  ...            0            0
+Actual S           50           85  ...            0          199
+Actual T            0            1  ...            1            7
+Actual U            2            5  ...            0            0
+Actual V            1            1  ...            2            0
+Actual W            2            3  ...            0            0
+Actual X            5           24  ...            4            0
+Actual Y            0            3  ...          194            0
+Actual Z           16           18  ...            0          418
+
+[26 rows x 26 columns]
+Test Accuracy: 0.6165
+Test Confusion Matrix:
+           Predicted A  Predicted B  ...  Predicted Y  Predicted Z
+Actual A          137            0  ...            1            0
+Actual B            0          105  ...            0            4
+Actual C            0            0  ...            3            1
+Actual D            3            8  ...            0            0
+Actual E            0            1  ...            0            9
+Actual F            0            5  ...            2            0
+Actual G            4            7  ...            0            9
+Actual H            1            9  ...            0            0
+Actual I            0           12  ...            0            5
+Actual J            3           14  ...            0            0
+Actual K            6            1  ...            0            0
+Actual L           13            4  ...            0            0
+Actual M           20            1  ...            0            0
+Actual N            1            3  ...            0            0
+Actual O            6            4  ...            0            0
+Actual P            0            1  ...            0            0
+Actual Q            6           11  ...            0            0
+Actual R            1           13  ...            0            0
+Actual S           13           36  ...            0           60
+Actual T            0            0  ...            1            0
+Actual U            0            0  ...            0            0
+Actual V            0            3  ...            0            0
+Actual W            0            1  ...            0            0
+Actual X            0            3  ...            0            0
+Actual Y            0            1  ...           49            0
+Actual Z            4            7  ...            0           86
+
+[26 rows x 26 columns]
+
+Precision/Recall/F1 (Train):
+Precision: None, Recall: None, F1: None
+
+Precision/Recall/F1 (Test):
+Precision: None, Recall: None, F1: None
