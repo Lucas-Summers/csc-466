@@ -1,0 +1,14 @@
+# 466 Lab 4
+Lucas Summers (lsumme01@calpoly.edu)
+Xiuyuan Qiu (xiqiu@calpoly.edu)
+
+## Requirements
+```
+pandas
+tqdm
+scikit-learn
+matplotlib
+numpy
+```
+If not already installed, run `pip install -r requirements.txt`.
+
