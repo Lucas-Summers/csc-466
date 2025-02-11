@@ -1,0 +1,27 @@
+Selected Method: 466
+Hyperparameter ranges tested:
+NumTrees: [25, 50, 100, 200, 500]
+NumAttributes: [1, 2, 3, 4]
+NumDataPoints: [0.05, 0.1, 0.2, 0.25]
+Best Hyperparameters: # of Trees: 100, # of Attributes: 4, # of Data Points: 10.0%
+
+Training Accuracy: 0.8726606212618174
+Training Confusion Matrix:
+                    Predicted not_recom  Predicted priority  Predicted spec_prior  Predicted very_recom
+Actual not_recom                  3478                   0                     0                     0
+Actual priority                      0                3075                   333                     0
+Actual spec_prior                    0                 722                  2493                     0
+Actual very_recom                    0                 265                     0                     0
+Test Accuracy: 0.875
+Test Confusion Matrix:
+                    Predicted not_recom  Predicted priority  Predicted spec_prior  Predicted very_recom
+Actual not_recom                   842                   0                     0                     0
+Actual priority                      0                 779                    79                     0
+Actual spec_prior                    0                 182                   647                     0
+Actual very_recom                    0                  63                     0                     0
+
+Precision/Recall/F1 (Train):
+Precision: None, Recall: None, F1: None
+
+Precision/Recall/F1 (Test):
+Precision: None, Recall: None, F1: None

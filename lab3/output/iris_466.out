@@ -1,0 +1,25 @@
+Selected Method: 466
+Hyperparameter ranges tested:
+NumTrees: [25, 50, 100, 200, 500]
+NumAttributes: [1, 2, 3, 4]
+NumDataPoints: [0.1, 0.15, 0.2]
+Best Hyperparameters: # of Trees: 25, # of Attributes: 1, # of Data Points: 15.0%
+
+Training Accuracy: 0.975
+Training Confusion Matrix:
+                         Predicted Iris-setosa  Predicted Iris-versicolor  Predicted Iris-virginica
+Actual Iris-setosa                         40                          0                         0
+Actual Iris-versicolor                      0                         40                         1
+Actual Iris-virginica                       0                          2                        37
+Test Accuracy: 1.0
+Test Confusion Matrix:
+                         Predicted Iris-setosa  Predicted Iris-versicolor  Predicted Iris-virginica
+Actual Iris-setosa                         10                          0                         0
+Actual Iris-versicolor                      0                          9                         0
+Actual Iris-virginica                       0                          0                        11
+
+Precision/Recall/F1 (Train):
+Precision: None, Recall: None, F1: None
+
+Precision/Recall/F1 (Test):
+Precision: None, Recall: None, F1: None

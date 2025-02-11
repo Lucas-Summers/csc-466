@@ -4,10 +4,7 @@ import json
 from collections import defaultdict
 
 class c45:
-    """
-    C45 class from lab 2 (optimized with vectorized operations)
-    """
-    def __init__(self, metric="info_gain", threshold=0.1):
+    def __init__(self, metric="info_gain", threshold=0.4):
         assert metric in ["info_gain", "gain_ratio"]
 
         self.metric = metric
@@ -28,55 +25,46 @@ class c45:
         else:
             raise ValueError("Invalid metric given.")
 
-    def proportion_of_most_common(self, y):
-        '''
-        Returns the proportion of the most common class in y
-        '''
-        uniq, counts = np.unique(y, return_counts=True)
-        max_idx = np.argmax(counts)
-        prob = counts[max_idx] / counts.sum()
-        return prob, uniq[max_idx]
-    
-    def build_tree(self, X, y, labels):
+    def build_tree(self, X, y):
         '''
         Recursively builds the decision tree
         '''
 
-        if len(np.unique(y)) == 1:
-            return {"leaf": {"decision": y[0], "p": 1.0}}
+        if len(y.unique()) == 1:
+            return {"leaf": {"decision": y.iloc[0], "p": 1.0}}
         
-        if X.size == 0 or X.shape[1] == 0:
-            prob, decision = self.proportion_of_most_common(y)
+        if X.empty or len(X.columns) == 0:
+            decision = y.value_counts().idxmax()
+            prob = y.value_counts(normalize=True).iloc[0]
             return {"leaf": {"decision": decision, "p": prob}}
 
         best_attr, best_score, best_threshold = self.best_split(X, y)
         if best_score < self.threshold:
-            prob, decision = self.proportion_of_most_common(y)
+            decision = y.value_counts().idxmax()
+            prob = y.value_counts(normalize=True).iloc[0]
             return {"leaf": {"decision": decision, "p": prob}}
 
-        tree = {"node": {"var": labels[best_attr], "edges": []}}
+        tree = {"node": {"var": best_attr, "edges": []}}
         if best_threshold is not None:  # Numeric split
-            left_mask = X[:, best_attr] <= best_threshold
-            right_mask = ~left_mask
+            left_mask = X[best_attr] <= best_threshold
+            right_mask = X[best_attr] > best_threshold
 
-            left_subtree = self.build_tree(X[left_mask], y[left_mask], labels)
-            right_subtree = self.build_tree(X[right_mask], y[right_mask], labels)
+            left_subtree = self.build_tree(X[left_mask], y[left_mask])
+            right_subtree = self.build_tree(X[right_mask], y[right_mask])
 
             tree["node"]["edges"].extend([
                 {"edge": {"op": "<=", "value": best_threshold, **left_subtree}},
                 {"edge": {"op": ">", "value": best_threshold, **right_subtree}},
             ])
         else:  # Categorical split
-            unique_vals, indices = np.unique(X[:, best_attr], return_inverse=True)  # Get unique values and their indices
-            for val in unique_vals:
-                mask = indices == np.where(unique_vals == val)[0][0]  # Faster than X[:, best_attr] == val
-                subset_X, subset_y = X[mask], y[mask]
-
-                subtree = self.build_tree(subset_X, subset_y, labels)
+            for val in X[best_attr].unique():
+                subset_X = X[X[best_attr] == val].drop(columns=[best_attr])
+                subset_y = y[X[best_attr] == val]
+                subtree = self.build_tree(subset_X, subset_y)
                 tree["node"]["edges"].append({"edge": {"value": val, **subtree}})
 
         return tree
-      
+
     def best_split(self, X, y):
         '''
         Determines the best attribute to split on based on the chosen metric
@@ -85,10 +73,9 @@ class c45:
         best_score = -np.inf
         best_threshold = None
 
-        cols = X.shape[1]
-        for attr in range(cols):
-            if np.issubdtype(X[:, attr].dtype, np.number):  # Numeric attribute
-                thresholds = np.unique(np.sort(X[:, attr]))
+        for attr in X.columns:
+            if X[attr].dtype in [np.float64, np.int64]:  # Numeric attribute
+                thresholds = X[attr].sort_values().unique()
                 for i in range(1, len(thresholds)):
                     threshold = (thresholds[i - 1] + thresholds[i]) / 2
                     score = self.metric_score(X, y, attr, threshold)
@@ -108,9 +95,8 @@ class c45:
         '''
         Compute the entropy of a label distribution
         '''
-        unique_values, counts = np.unique(y, return_counts=True)
-        probs = counts / counts.sum()
-        return -np.sum(probs * np.log2(probs))
+        probs = y.value_counts(normalize=True)
+        return -sum(probs * np.log2(probs))
 
     def info_gain(self, X, y, attr, threshold=None):
         '''
@@ -119,16 +105,15 @@ class c45:
         total_entropy = self.entropy(y)
 
         if threshold is not None:  # Numeric attribute
-            left_mask = X[:, attr] <= threshold
-            right_mask = ~left_mask
+            left_mask = X[attr] <= threshold
+            right_mask = X[attr] > threshold
 
             left_y, right_y = y[left_mask], y[right_mask]
             weighted_entropy = (len(left_y) / len(y)) * self.entropy(left_y) + \
                                (len(right_y) / len(y)) * self.entropy(right_y)
         else: # Categorical attribute
-            values, counts = np.unique(X[:, attr], return_counts=True)
-            probs = counts / len(y)
-            weighted_entropy = np.sum(probs * self.entropy(y[X[:, attr] == val]) for val in values)
+            values = X[attr].unique()
+            weighted_entropy = sum((len(y[X[attr] == val]) / len(y)) * self.entropy(y[X[attr] == val]) for val in values)
 
         return total_entropy - weighted_entropy
 
@@ -139,45 +124,40 @@ class c45:
         info_gain = self.info_gain(X, y, attr, threshold)
 
         if threshold is not None:  # Numeric attribute
-            left_mask = X[:, attr] <= threshold
-            right_mask = ~left_mask
+            left_mask = X[attr] <= threshold
+            right_mask = X[attr] > threshold
 
-            left_ratio = np.sum(left_mask) / len(y)
-            right_ratio = 1 - left_ratio
-            split_info = -np.sum(r * np.log2(r) for r in [left_ratio, right_ratio] if r > 0)
+            left_ratio = len(y[left_mask]) / len(y)
+            right_ratio = len(y[right_mask]) / len(y)
+            split_info = -sum(r * np.log2(r) for r in [left_ratio, right_ratio] if r > 0)
         else:  # Categorical attribute
-            values, counts = np.unique(X[:, attr], return_counts=True)
-            probs = counts / len(y)
-            split_info = -np.sum(probs * np.log2(probs))
+            split_info = -sum((len(y[X[attr] == val]) / len(y)) * np.log2(len(y[X[attr] == val]) / len(y)) 
+                              for val in X[attr].unique())
 
         return info_gain / split_info if split_info != 0 else 0
 
-    def fit(self, X_train, y_train, labels, filename):
+    def fit(self, X_train, y_train, filename):
         '''
         Train the C45 decision tree on the given dataset
         '''
-        self.tree = self.build_tree(X_train, y_train, labels)
+        self.tree = self.build_tree(X_train, y_train)
         self.tree = {"dataset": filename, **self.tree}
     
-    def predict(self, X_test, labels, prob=False, verbose=False):
+    def predict(self, X_test_df, prob=False):
         '''
-        Predicts the class for each row in the given np array. Expects
+        Predicts the class for each row in the given dataframe. Expects
         a dataframe with labeled columns. 
-        labels is the labels for the classes in the order they are given in X_test
         Returns a list of class predictions if prob=False, or a list of
         tuples with the class and the probability if prob=True
         '''
         if self.tree is None:
             print("Tree is not trained, call fit() or read_tree() first")
 
-        if verbose:
-            print("Predicting", "with tree", self.tree, "labels", labels)
         # iterate and build a list of predictions
         result = []
-        for index in range(X_test.shape[0]):
-            row = X_test[index]
+        for index, row in X_test_df.iterrows():
             if "node" in self.tree:
-                pred = self.predict_row(row, self.tree["node"], labels, prob)
+                pred = self.predict_row(row, self.tree["node"], prob)
             elif "leaf" in self.tree:
                 pred = (self.tree["leaf"]["decision"], self.tree["leaf"]["p"]) if prob else self.tree["leaf"]["decision"]
             else:
@@ -186,7 +166,7 @@ class c45:
             result.append(pred)
         return result
     
-    def predict_row(self, row, node, labels, prob=False):
+    def predict_row(self, row, node, prob=False):
         '''
         Get the predicted class for a row by traversing the given node
         returns the class if prob=False, a tuple (class, p) if prob=True,
@@ -194,26 +174,25 @@ class c45:
         '''
         # what label the tree is splitting on
         split_var = node["var"]
-        split_var_idx = labels.index(split_var)
         # value the row has for that label
-        row_value = row[split_var_idx]
+        row_value = row[split_var]
         
         for edge_dict in node["edges"]:
             edge = edge_dict["edge"]
 
             if "op" in edge:  # Numeric split
-                if edge["op"] == "<=" and row_value <= edge["value"]:
+                if edge["op"] == "<=" and row[split_var] <= edge["value"]:
                     if "leaf" in edge:
                         result = edge["leaf"]
                         return (result["decision"], result["p"]) if prob else result["decision"]
                     else:
-                        return self.predict_row(row, edge["node"], labels, prob)
-                elif edge["op"] == ">" and row_value > edge["value"]:
+                        return self.predict_row(row, edge["node"], prob)
+                elif edge["op"] == ">" and row[split_var] > edge["value"]:
                     if "leaf" in edge:
                         result = edge["leaf"]
                         return (result["decision"], result["p"]) if prob else result["decision"]
                     else:
-                        return self.predict_row(row, edge["node"], labels, prob)
+                        return self.predict_row(row, edge["node"], prob)
             else: # Categorical split
                 if edge["value"] == row_value:
                     if "leaf" in edge:
@@ -223,7 +202,7 @@ class c45:
                         else:
                             return (result["decision"], result["p"])
                     else:
-                        return self.predict_row(row, edge["node"], labels)
+                        return self.predict_row(row, edge["node"])
         # plurality voting
         count_leaves = self.count_leaves(node)
         max_class = max(count_leaves, key=count_leaves.get)

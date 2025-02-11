@@ -1,0 +1,27 @@
+Selected Method: sklearn
+Hyperparameter ranges tested:
+NumTrees: [25, 50, 100, 200, 500]
+NumAttributes: [1, 2, 3, 4]
+NumDataPoints: [0.05, 0.1, 0.2, 0.25]
+Best Hyperparameters: # of Trees: 25, # of Attributes: 3, # of Data Points: 5.0%
+
+Training Accuracy: 0.7964499324715416
+Training Confusion Matrix:
+                    Predicted not_recom  Predicted priority  Predicted spec_prior  Predicted very_recom
+Actual not_recom                  3478                   0                     0                     0
+Actual priority                      0                3180                   228                     0
+Actual spec_prior                    0                1617                  1598                     0
+Actual very_recom                    0                 265                     0                     0
+Test Accuracy: 0.8001543209876543
+Test Confusion Matrix:
+                    Predicted not_recom  Predicted priority  Predicted spec_prior  Predicted very_recom
+Actual not_recom                   842                   0                     0                     0
+Actual priority                      0                 806                    52                     0
+Actual spec_prior                    0                 403                   426                     0
+Actual very_recom                    0                  63                     0                     0
+
+Precision/Recall/F1 (Train):
+Precision: None, Recall: None, F1: None
+
+Precision/Recall/F1 (Test):
+Precision: None, Recall: None, F1: None

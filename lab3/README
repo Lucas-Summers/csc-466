@@ -1,0 +1,26 @@
+# 466 Lab 3
+Lucas Summers (lsumme01@calpoly.edu)
+Xiuyuan Qiu (xiqiu@calpoly.edu)
+
+## Requirements
+```
+pandas
+tqdm
+scikit-learn
+matplotlib
+numpy
+joblib
+```
+If not already installed, run `pip install -r requirements.txt`.
+
+## Files
+csv_reader.py: helper functions to convert a csv into a pandas dataframe/numpy array
+c45.py: our C4.5 model implementation from lab 2, with speed optimizations for .fit()
+rf.py: our RandomForest model implementation that uses our custom c45 model
+rfEval.py: grid search and evaluation of our model vs. sklearn
+
+## Test Commands (needs `nursery.csv` in `csv/`)
+```
+python rfEval.py csv/nursery.csv 466
+python rfEval.py csv/nursery.csv sklearn
+```
