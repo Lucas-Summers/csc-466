@@ -172,7 +172,6 @@ def remove_outliers_zscore(X, threshold=3):
     z_scores = np.where(std_dev != 0, (X - mean) / std_dev, 0)
     # Filter out rows where any feature has a Z-score greater than the threshold
     X_clean = X[np.all(np.abs(z_scores) < threshold, axis=1)]
-    print(X_clean)
     return X_clean
 
 def remove_outliers_iqr(X):
@@ -213,7 +212,7 @@ if __name__ == "__main__":
     if categorical_columns:
         encoder = OrdinalEncoder()
         df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
-    print(df.to_numpy())
+
     X = preprocess_data(df.to_numpy())
 
     #y = df.iloc[:, -1].to_numpy() # for iris
