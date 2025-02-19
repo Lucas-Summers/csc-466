@@ -4,11 +4,12 @@ import sys
 from sklearn.preprocessing import OrdinalEncoder
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, rand_score
+from preprocessor import preprocess_data
 
 # try it with `python kmeans.py csv/iris.csv 3`
 
-class KMeans:
+class Kmeans:
     def __init__(self, n_clusters=2, tol=1e-4, max_iter=300, random_state=42):
         self.n_clusters = n_clusters
         self.tol = tol
@@ -17,7 +18,8 @@ class KMeans:
         self.labels = None
         self.centroids = None
         
-        np.random.seed(self.random_state) # for reproducibility
+        if self.random_state:
+            np.random.seed(self.random_state) # for reproducibility
 
     def initialize_centroids(self, X):
         '''
@@ -40,7 +42,7 @@ class KMeans:
         distances = np.linalg.norm(X[:, np.newaxis] - self.centroids, axis=2)
         return np.argmin(distances, axis=1)
 
-    def move_centroids(self, X):
+    def recompute_centroids(self, X):
         '''
         Compute new centroids as the mean of the assigned points in the cluster
         '''
@@ -62,12 +64,12 @@ class KMeans:
         prev_sse = 0
         for i in range(self.max_iter):
             self.labels = self.assign_clusters(X)
-            new_centroids = self.move_centroids(X)
+            new_centroids = self.recompute_centroids(X)
             
             sse = self.compute_sse(X, new_centroids)
-            print(prev_sse)
+            #print(prev_sse)
             if prev_sse != 0 and abs(prev_sse - sse) / prev_sse < self.tol:
-                print(f"Converged at iteration {i}")
+                #print(f"Converged at iteration {i}")
                 break
 
             self.centroids = new_centroids
@@ -79,25 +81,6 @@ class KMeans:
         '''
         return self.assign_clusters(X)
 
-    def cluster_stats(self, X):
-        '''
-        Compute evaluation metrics for each cluster
-        '''
-        cluster_stats = []
-        for i in range(len(self.centroids)):
-            cluster_points = X[self.labels == i]
-            distances = np.linalg.norm(cluster_points - self.centroids[i], axis=1)
-            cluster_stats.append({
-                'Cluster': i,
-                'Size': len(cluster_points),
-                'Centroid': self.centroids[i],
-                'Max Dist': np.max(distances),
-                'Min Dist': np.min(distances),
-                'Avg Dist': np.mean(distances),
-                'SSE': np.sum(distances ** 2),
-                'Points': cluster_points
-            })
-        return cluster_stats
 
     def compute_purity(self, X, y):
         '''
@@ -105,38 +88,14 @@ class KMeans:
         '''
         purity = 0
         for i in range(self.n_clusters):
-            # Get the true labels of the points in this cluster
             cluster_labels = y[self.labels == i]
-            
-            # Find the most frequent true label in this cluster using np.unique
             unique_labels, counts = np.unique(cluster_labels, return_counts=True)
-            
-            # Get the label with the maximum count (mode)
             most_common_label = unique_labels[np.argmax(counts)]
             
-            # Count how many points in this cluster have the most common label
             purity += np.sum(cluster_labels == most_common_label)
         
-        # Compute overall purity as the proportion of correctly classified points
         return purity / len(X)
 
-    def compute_intercluster_distances(self):
-        '''
-        Compute the pairwise distances between centroids of clusters
-        '''
-        n_clusters = len(self.centroids)
-        distances = np.zeros((n_clusters, n_clusters))
-        for i in range(n_clusters):
-            for j in range(i + 1, n_clusters):
-                dist = np.linalg.norm(self.centroids[i] - self.centroids[j])
-                distances[i, j] = dist
-                distances[j, i] = dist  # Since distance is symmetric
-        
-        # Convert to DataFrame for better readability
-        distance_df = pd.DataFrame(distances, columns=[f"Cluster {i}" for i in range(n_clusters)],
-                                   index=[f"Cluster {i}" for i in range(n_clusters)])
-        return distance_df
-    
     def plot_clusters(self, X):
         '''
         Plot the clusters and centroids in 2D (using PCA if needed)
@@ -165,40 +124,60 @@ class KMeans:
 
         plt.show()
 
-def remove_outliers_zscore(X, threshold=3):
-    # Calculate Z-scores
-    mean = np.mean(X, axis=0)
-    std_dev = np.std(X, axis=0)
-    z_scores = np.where(std_dev != 0, (X - mean) / std_dev, 0)
-    # Filter out rows where any feature has a Z-score greater than the threshold
-    X_clean = X[np.all(np.abs(z_scores) < threshold, axis=1)]
-    return X_clean
+    def cluster_stats(self, X):
+        '''
+        Compute evaluation metrics for each cluster along with intercluster distances and ratio of radiuses to intercluster distances
+        '''
+        silhouette_vals = silhouette_samples(X, self.labels) if self.n_clusters > 1 else np.zeros(len(X))
+        # Initialize with inf to ignore self-distances
+        intercluster_dists = np.full((self.n_clusters, self.n_clusters), np.inf)
+        radius_distance_ratios = []
 
-def remove_outliers_iqr(X):
-    # Calculate Q1 (25th percentile) and Q3 (75th percentile)
-    Q1 = np.percentile(X, 25, axis=0)
-    Q3 = np.percentile(X, 75, axis=0)
-    IQR = Q3 - Q1
-    
-    # Define outliers
-    lower_bound = Q1 - 1.5 * IQR
-    upper_bound = Q3 + 1.5 * IQR
-    
-    # Filter out rows that are outside of the bounds
-    X_clean = X[np.all((X >= lower_bound) & (X <= upper_bound), axis=1)]
-    return X_clean
+        cluster_stats = []
+        for i in range(self.n_clusters):
+            cluster_points = X[self.labels == i]
+            distances = np.linalg.norm(cluster_points - self.centroids[i], axis=1)
+            cluster_silhouette = silhouette_vals[self.labels == i] if len(cluster_points) > 1 else [0]
+            cluster_radius = np.max(distances) if len(distances) > 0 else 0
 
-def preprocess_data(X):
-    # Example with Normalization
-    #scaler = MinMaxScaler()
-    #X_scaled = scaler.fit_transform(X)
-    #return remove_outliers_iqr(X_scaled)
-    
-    # Example with Standardization
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    return remove_outliers_zscore(X_scaled)
+            for j in range(i + 1, self.n_clusters):  
+                dist = np.linalg.norm(self.centroids[i] - self.centroids[j])
+                intercluster_dists[i, j] = dist
+                intercluster_dists[j, i] = dist  # Symmetric matrix
+                if dist > 0:  # Avoid division by zero
+                    other_radius = np.max(np.linalg.norm(X[self.labels == j] - self.centroids[j], axis=1))
+                    ratio = (cluster_radius + other_radius) / dist
+                    radius_distance_ratios.append(ratio)
 
+            cluster_stats.append({
+                'label': i,
+                'size': len(cluster_points),
+                'centroid': self.centroids[i],
+                'radius': cluster_radius,
+                'silhouette': np.mean(cluster_silhouette),
+                'sse': np.sum(distances ** 2),
+                'points': cluster_points
+            })
+        return cluster_stats, intercluster_dists, radius_distance_ratios
+
+    def score(self, X, y=None):
+        silhouette = silhouette_score(X, self.labels) if self.n_clusters > 1 else 0
+        ch_index = calinski_harabasz_score(X, self.labels) if self.n_clusters > 1 else 0
+        rand_index = rand_score(y, self.labels) if y is not None else None
+        purity = self.compute_purity(X, y) if y is not None else None
+
+        stats, intercluster_dists, radius_distance_ratios = self.cluster_stats(X)
+
+        avg_radius_distance_ratio = np.mean(radius_distance_ratios) if radius_distance_ratios else np.nan
+
+        return {
+            "radius_distance_ratio": avg_radius_distance_ratio,
+            "silhouette_score": silhouette,
+            "ch_index": ch_index,
+            "rand_index": rand_index,
+            "purity": purity,
+            "stats": stats
+        }
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -212,31 +191,33 @@ if __name__ == "__main__":
     if categorical_columns:
         encoder = OrdinalEncoder()
         df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
+    X = preprocess_data(df.to_numpy(), "normal")
+    #X = df.to_numpy()
+    #y = None
+    
+    # for iris or data with ground truth
+    y = X[:, -1]
+    #X = X[:, :-1]
 
-    X = preprocess_data(df.to_numpy())
-
-    #y = df.iloc[:, -1].to_numpy() # for iris
-
-    model = KMeans(n_clusters=k)
+    model = Kmeans(n_clusters=k)
     model.fit(X)
-    stats = model.cluster_stats(X)
-    for cluster in stats:
-        print(f"Cluster {cluster['Cluster']}:\n"
-              f"  Center: {', '.join(f'{val:.2f}' for val in cluster['Centroid'])}\n"
-              f"  Max Dist: {cluster['Max Dist']}\n"
-              f"  Min Dist: {cluster['Min Dist']}\n"
-              f"  Avg Dist: {cluster['Avg Dist']}\n"
-              f"  SSE: {cluster['SSE']}\n"
-              f"  {cluster['Size']} Points:")
-        for point in cluster['Points']:
-            print("  ", ', '.join(map(str, point)))
-
-    intercluster_distances = model.compute_intercluster_distances()
-    print("\nInter-cluster distances:")
-    print(intercluster_distances.to_string())
-
-    # for iris
-    #purity = model.compute_purity(X, y)
-    #print(f"\nTotal Cluster Purity: {purity * 100:.2f}%")
+    score = model.score(X, y)
+    for cluster in score['stats']:
+        print(f"Cluster {cluster['label']}:\n"
+              f"  Center: {', '.join(f'{val:.2f}' for val in cluster['centroid'])}\n"
+              f"  Radius: {cluster['radius']:.4f}\n"
+              f"  Silhouette Score: {cluster['silhouette']:.4f}\n"
+              f"  SSE: {cluster['sse']:.4f}\n"
+              f"  {cluster['size']} Points")
+        #for point in cluster['points']:
+         #   print("  ", ', '.join(f'{val:.2f}' for val in point))
+ 
+    print("\n=== Clustering Metrics ===")
+    print(f"Avg Radius-to-Intercluster Distance Ratio: {score['radius_distance_ratio']:.4f}")
+    print(f"Silhouette Score: {score['silhouette_score']:.4f}")
+    print(f"Calinski-Harabasz Index: {score['ch_index']:.4f}")
+    if score['rand_index'] is not None:
+        print(f"Rand Index: {score['rand_index']:.4f}")
+        print(f"Total Cluster Purity: {score['purity']:.4f}")
 
     model.plot_clusters(X)
