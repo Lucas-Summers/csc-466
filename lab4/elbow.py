@@ -10,8 +10,9 @@ from dbscan import DBScan
 from kmeans import Kmeans
 from itertools import product
 from sklearn.cluster import KMeans, DBSCAN
+import os
 
-def kmeans_elbow(hyps, X, y=None, method='466'):
+def kmeans_elbow(hyps, X, y=None, filename='', method='466'):
     scores = {'ch_index': [], 'silhouette_score': []}
     k_values = hyps['k']
 
@@ -39,7 +40,7 @@ def kmeans_elbow(hyps, X, y=None, method='466'):
     plt.plot(k_values, scores['ch_index'], marker='o', color='b', label='CH Index')
     plt.xlabel('Number of Clusters (k)')
     plt.ylabel('CH Index')
-    plt.title(f'KMeans - CH Index ({method})')
+    plt.title(f'KMeans - CH Index ({method}, {filename})')
     plt.grid(True)
 
     # Plot Silhouette Score
@@ -47,14 +48,14 @@ def kmeans_elbow(hyps, X, y=None, method='466'):
     plt.plot(k_values, scores['silhouette_score'], marker='o', color='g', label='Silhouette Score')
     plt.xlabel('Number of Clusters (k)')
     plt.ylabel('Silhouette Score')
-    plt.title(f'KMeans - Silhouette Score ({method})')
+    plt.title(f'KMeans - Silhouette Score ({method}, {filename})')
     plt.grid(True)
 
     plt.tight_layout()
-    plt.savefig(f'elbow/kmeans-{method}.png', dpi=300)
+    plt.savefig(f'elbow/kmeans-{method}-{filename}.png', dpi=300)
     plt.show()
 
-def dbscan_elbow(hyps, X, y=None, method='466', metric='ch_index'):
+def dbscan_elbow(hyps, X, y=None, filename='', method='466', metric='ch_index'):
     scores = {}
     eps_values = hyps['epsilon']
     minpts_values = hyps['minpts']
@@ -91,7 +92,7 @@ def dbscan_elbow(hyps, X, y=None, method='466', metric='ch_index'):
         plt.plot(eps_values, values['ch_index'], marker='o', label=f'MinPts={minpts}')
     plt.xlabel('Epsilon')
     plt.ylabel('CH Index')
-    plt.title(f'DBSCAN - CH Index ({method})')
+    plt.title(f'DBSCAN - CH Index ({method}, {filename})')
     plt.legend()
     plt.grid(True)
 
@@ -101,12 +102,12 @@ def dbscan_elbow(hyps, X, y=None, method='466', metric='ch_index'):
         plt.plot(eps_values, values['silhouette_score'], marker='o', label=f'MinPts={minpts}')
     plt.xlabel('Epsilon')
     plt.ylabel('Silhouette Score')
-    plt.title(f'DBSCAN - Silhouette Score ({method})')
+    plt.title(f'DBSCAN - Silhouette Score ({method}, {filename})')
     plt.legend()
     plt.grid(True)
 
     plt.tight_layout()
-    plt.savefig(f'elbow/dbscan-{method}.png', dpi=300)
+    plt.savefig(f'elbow/dbscan-{method}-{filename}.png', dpi=300)
     plt.show()
 
 if __name__ == "__main__":
@@ -133,12 +134,13 @@ if __name__ == "__main__":
     
     # Generate hyperparam ranges
     kmeans_hyps = {'k': range(2, 10)}
-    hcluster_hyps = {'threshold': range(2, 3)}
-    dbscan_hyps = {'epsilon': np.linspace(0.1, 1, 20), 'minpts': range(3, 10)}
-
-    #kmeans_elbow(kmeans_hyps, X, y, method='466')
-    #kmeans_elbow(kmeans_hyps, X, y, method='sklearn')
-    dbscan_elbow(dbscan_hyps, X, y, method='466')
-    dbscan_elbow(dbscan_hyps, X, y, method='sklearn')
+    dbscan_hyps = {'epsilon': np.linspace(0.1, 1, 20), 'minpts': range(3, 15)}
+    #hcluster_hyps = {'threshold': range(2, 3)}
+    
+    fname = os.path.splitext(os.path.basename(csv))[0]
+    kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='466')
+    kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='sklearn')
+    dbscan_elbow(dbscan_hyps, X, y, filename=fname, method='466')
+    dbscan_elbow(dbscan_hyps, X, y, filename=fname,method='sklearn')
 
 
