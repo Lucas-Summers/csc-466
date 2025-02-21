@@ -2,6 +2,9 @@ import argparse
 import pandas as pd
 import numpy as np
 import json
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score, calinski_harabasz_score, rand_score
 from sklearn.preprocessing import OrdinalEncoder
 
 # try with `python hclustering.py csv/mammal_milk.csv --dot mm.dot`
@@ -20,6 +23,7 @@ class AgglomerativeClustering:
         self.tree = None
         self.metric = metric
         self.linkage = linkage
+        self.cut = None
 
     def cluster_distance(self, cluster1_idxs, cluster2_idxs, X):
         '''
@@ -64,12 +68,14 @@ class AgglomerativeClustering:
     def cut_tree(self, threshold, node=None, print_dot=False):
         '''
         Cut the dendrogram at the specified threshold.
-        Return a list of nodes representing the clusters below the threshold.
+        If print_dot is True, print DOT for visualizing cut tree.
+        Returns a list of nodes at the cut level.
         '''
         if node is None:
             node = self.tree
 
         if node['type'] == 'leaf' or node['height'] < threshold:
+            self.cut = [node]
             return [node]
         ret = []
         for child in node['nodes']:
@@ -82,8 +88,69 @@ class AgglomerativeClustering:
             dot_str += "}"
             print(dot_str)
 
+        self.cut = ret
         return ret
     
+    def get_clusters(self, threshold):
+        '''
+        Get the clusters at the specified threshold.
+        If threshold < 1, it is treated as a proportion of the maximum height.
+        '''
+        if threshold < 1:
+            threshold = self.tree["height"] * threshold
+        nodes = self.cut_tree(threshold)
+        X, y = [], []
+        for i, node in enumerate(nodes):
+            leaves = self.get_leaves(node)
+            for leaf in leaves:
+                X.append(leaf['data'])
+                y.append(i)
+        return np.array(X), np.array(y)
+        
+    def get_leaves(self, node):
+        if node['type'] == 'leaf':
+            return [node]
+        leaves = []
+        for child in node['nodes']:
+            leaves += self.get_leaves(child)
+        return leaves
+    
+    def plot_clusters(self, threshold):
+        '''
+        Plot the clusters and centroids in 2D (using PCA if needed)
+        '''
+        X, y = self.get_clusters(threshold)
+        # If the data is more than 2D, apply PCA to reduce it to 2D
+        if X.shape[1] > 2:
+            # encode categorical columns as integers
+            encoder = OrdinalEncoder()
+            cat_cols = np.vectorize(lambda x: isinstance(x, str))(X[0])
+            if np.any(cat_cols):
+                X[:, cat_cols] = encoder.fit_transform(X[:, cat_cols])
+            pca = PCA(n_components=2)
+            X = pca.fit_transform(X)
+        
+        # Plot the clusters
+        for i in np.unique(y):
+            plt.scatter(X[y == i, 0], X[y == i, 1], label=f'Cluster {i}')
+
+        # Add labels and title
+        plt.title('Agg Clusters (PCA-reduced)')
+        plt.xlabel('PCA Component 1')
+        plt.ylabel('PCA Component 2')
+        plt.legend(loc='best')
+
+        plt.show()
+
+    def score(self, X, y):
+        silhouette = silhouette_score(X, y) if len(self.cut) > 1 else 0
+        ch_index = calinski_harabasz_score(X, y) if len(self.cut) > 1 else 0
+
+        return {
+            "silhouette_score": silhouette,
+            "ch_index": ch_index
+        }
+
     def generate_dot(self, nodes=None):
         '''
         For visualizing the dendrogram using Graphviz. 
@@ -117,19 +184,23 @@ class AgglomerativeClustering:
         
 
 
-
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("filename", help="CSV file name")
-    ap.add_argument("threshold", type=float, help="Threshold for cutting the dendrogram", nargs='?', default=None)
+    ap.add_argument("threshold", type=float, help="Threshold for cutting the dendrogram, if < 1, proportion of maximum height", nargs='?', default=None)
     ap.add_argument("--linkage", help="Linkage method (single, complete, average)", 
                     default="single", 
                     choices=["single", "complete", "average"])
     ap.add_argument("--json", help="Output json file name", default=None)
     ap.add_argument("--dot", help="Output DOT file name", default=None)
+    ap.add_argument("--plot", help="Plot the clusters", action="store_true")
     args = ap.parse_args()
 
     df = pd.read_csv(args.filename)
+
+    # filter by column name
+    X = df.select_dtypes(include=[np.number])
+    y = df.select_dtypes(include=[object])
 
     ## Not needed for now...
     # Encode categorical columns as integers
@@ -137,16 +208,19 @@ if __name__ == "__main__":
     # if categorical_columns:
     #     encoder = OrdinalEncoder()
     #     df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
-    X = df.to_numpy()
+    X = X.to_numpy()
 
     model = AgglomerativeClustering()
+    print("Fitting the model...")
     model.fit(X)
 
     if args.threshold is not None:
-        # TODO: return just the clusters, not the nodes.
         print("Cutting the dendrogram at threshold", args.threshold)
-        model.cut_tree(args.threshold, print_dot=True)
-
+        X, y = model.get_clusters(args.threshold)
+        print(model.tree["height"])
+        if args.plot:
+            model.plot_clusters(args.threshold)
+        print(model.score(X, y))
     if args.json:
         with open(args.out, "w") as f:
             json.dump(model.tree, f, indent=2)
