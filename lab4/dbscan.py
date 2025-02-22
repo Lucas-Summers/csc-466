@@ -6,6 +6,7 @@ from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, rand_score
 from preprocessor import preprocess_data
+from preprocessor import load_data
 
 class DBScan:
     def __init__(self, epsilon=0.5, minpts=4):
@@ -200,14 +201,9 @@ if __name__ == "__main__":
     epsilon = float(sys.argv[2])
     numPoints = int(sys.argv[3])
 
-    df = pd.read_csv(csv)
-    categorical_columns = df.select_dtypes(include=["object"]).columns.tolist()
-    if categorical_columns:
-        encoder = OrdinalEncoder()
-        df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
-    X = preprocess_data(df.to_numpy(), "normal")
-    #X = df.to_numpy()
-    y = None
+
+    X, y = load_data(csv, target=False)
+    X, y = preprocess_data(X, y, "normal")
     
     # for iris or data with ground truth
     #y = X[:, -1]
