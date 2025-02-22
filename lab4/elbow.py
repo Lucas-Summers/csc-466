@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import calinski_harabasz_score, silhouette_score
 from preprocessor import preprocess_data
 from hclustering import AgglomerativeClustering as AgglomerativeClustering466
+from preprocessor import preprocess_data, load_data
+
 from dbscan import DBScan
 from kmeans import Kmeans
 from itertools import product
@@ -163,28 +165,17 @@ if __name__ == "__main__":
 
     csv = sys.argv[1]
 
-    
-    df = pd.read_csv(csv)
-    categorical_columns = df.select_dtypes(include=["object"]).columns.tolist()
-    if categorical_columns:
-        encoder = OrdinalEncoder()
-        df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
-    X = preprocess_data(df.to_numpy(), "normal")
-    #X = df.to_numpy()
-    y = None
+    X, y = load_data(csv, target=False)
+    X, y = preprocess_data(X, y, "normal")
 
-    # for iris or data with ground truth
-    #y = X[:, -1]
-    #X = X[:, :-1]
-    
     # Generate hyperparam ranges
     kmeans_hyps = {'k': range(2, 10)}
     dbscan_hyps = {'epsilon': np.linspace(0.1, 1, 20), 'minpts': range(3, 15)}
     fname = os.path.splitext(os.path.basename(csv))[0]
     kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='466')
     kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='sklearn')
-    dbscan_elbow(dbscan_hyps, X, y, filename=fname, method='466')
-    dbscan_elbow(dbscan_hyps, X, y, filename=fname,method='sklearn')
+    #dbscan_elbow(dbscan_hyps, X, y, filename=fname, method='466')
+    #dbscan_elbow(dbscan_hyps, X, y, filename=fname,method='sklearn')
 
     df = pd.read_csv(csv)
     X = df.select_dtypes(include=[np.number])

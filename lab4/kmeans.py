@@ -5,7 +5,7 @@ from sklearn.preprocessing import OrdinalEncoder
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, rand_score
-from preprocessor import preprocess_data
+from preprocessor import preprocess_data, load_data
 
 # try it with `python kmeans.py csv/iris.csv 3`
 
@@ -185,19 +185,9 @@ if __name__ == "__main__":
         sys.exit(1)
     csv = sys.argv[1]
     k = int(sys.argv[2])
-
-    df = pd.read_csv(csv)
-    categorical_columns = df.select_dtypes(include=["object"]).columns.tolist()
-    if categorical_columns:
-        encoder = OrdinalEncoder()
-        df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
-    X = preprocess_data(df.to_numpy(), "normal")
-    #X = df.to_numpy()
-    #y = None
     
-    # for iris or data with ground truth
-    y = X[:, -1]
-    #X = X[:, :-1]
+    X, y = load_data(csv, target=False)
+    X, y = preprocess_data(X, y, "normal")
 
     model = Kmeans(n_clusters=k)
     model.fit(X)
