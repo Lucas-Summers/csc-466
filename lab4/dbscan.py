@@ -211,8 +211,8 @@ if __name__ == "__main__":
 
     model = DBScan(epsilon=epsilon, minpts=numPoints)
     model.fit(X)
-    print(model.clusters)
-    print(model.noise)
+    # print(model.clusters)
+    # print(model.noise)
     score = model.score(X, y)
 
     for cluster in score['stats']:

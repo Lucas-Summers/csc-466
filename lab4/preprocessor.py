@@ -55,7 +55,7 @@ def load_data(csv, target=False):
         dropped = None
 
     df = df.loc[:, inclusion_mask == 1].to_numpy()
-    print(df)
+    # print(df)
 
     return df, dropped
     
