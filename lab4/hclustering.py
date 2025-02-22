@@ -276,7 +276,8 @@ if __name__ == "__main__":
             print(f"SSE: {metrics['sse'][i]}")
             if labels is not None:
                 print(f"Purity: {metrics['purity'][i]}")
-                Xout = np.concatenate((Xout, labels), axis=1)
+                if i == 0:
+                    Xout = np.concatenate((Xout, labels), axis=1)
             for point in Xout[cluster == i]:
                 print(", ".join(map(str, point)))
             print()
