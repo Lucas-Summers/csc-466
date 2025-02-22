@@ -5,11 +5,11 @@ from sklearn.preprocessing import OrdinalEncoder
 import matplotlib.pyplot as plt
 from sklearn.metrics import calinski_harabasz_score, silhouette_score
 from preprocessor import preprocess_data
-from hclustering import AgglomerativeClustering
+from hclustering import AgglomerativeClustering as AgglomerativeClustering466
 from dbscan import DBScan
 from kmeans import Kmeans
 from itertools import product
-from sklearn.cluster import KMeans, DBSCAN
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
 from tqdm import tqdm
 import os
 
@@ -117,14 +117,14 @@ def hcluster_elbow(hyps, X, filename='', method='466'):
 
     for thresh in tqdm(threshs):
         if method == 'sklearn':
-            model = KMeans(n_clusters=k)
+            model = AgglomerativeClustering(linkage='single', n_clusters=thresh)   
         elif method == '466':
-            model = AgglomerativeClustering()
+            model = AgglomerativeClustering466()
 
         model.fit(X)
-        X, y = model.get_clusters(thresh)
 
         if method == "466":
+            X, y = model.get_clusters(thresh, X)
             scores['ch_index'].append(model.score(X, y)['ch_index'])
             scores['silhouette_score'].append(model.score(X, y)['silhouette_score'])
         elif method == "sklearn":
@@ -138,7 +138,7 @@ def hcluster_elbow(hyps, X, filename='', method='466'):
     # Plot CH Index
     plt.subplot(1, 2, 1)
     plt.plot(threshs, scores['ch_index'], marker='o', color='b', label='CH Index')
-    plt.xlabel('Proportion of Max Height')
+    plt.xlabel('Height to Cut')
     plt.ylabel('CH Index')
     plt.title(f'AggCluster - CH Index ({method}, {filename})')
     plt.grid(True)
@@ -146,7 +146,7 @@ def hcluster_elbow(hyps, X, filename='', method='466'):
     # Plot Silhouette Score
     plt.subplot(1, 2, 2)
     plt.plot(threshs, scores['silhouette_score'], marker='o', color='g', label='Silhouette Score')
-    plt.xlabel('Proportion of Max Height')
+    plt.xlabel('Height to Cut')
     plt.ylabel('Silhouette Score')
     plt.title(f'AggCluster - Silhouette Score ({method}, {filename})')
     plt.grid(True)
@@ -180,20 +180,18 @@ if __name__ == "__main__":
     # Generate hyperparam ranges
     kmeans_hyps = {'k': range(2, 10)}
     dbscan_hyps = {'epsilon': np.linspace(0.1, 1, 20), 'minpts': range(3, 15)}
-    hcluster_hyps = {'threshold': np.linspace(0.1, .99, 10)}
-    
     fname = os.path.splitext(os.path.basename(csv))[0]
-    # kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='466')
-    # kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='sklearn')
-    # dbscan_elbow(dbscan_hyps, X, y, filename=fname, method='466')
-    # dbscan_elbow(dbscan_hyps, X, y, filename=fname,method='sklearn')
+    kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='466')
+    kmeans_elbow(kmeans_hyps, X, y, filename=fname, method='sklearn')
+    dbscan_elbow(dbscan_hyps, X, y, filename=fname, method='466')
+    dbscan_elbow(dbscan_hyps, X, y, filename=fname,method='sklearn')
 
     df = pd.read_csv(csv)
     X = df.select_dtypes(include=[np.number])
     y = df.select_dtypes(include=[object])
     X = X.to_numpy()
-
+    hcluster_hyps = {'threshold': range(2, len(X)-1)}
     hcluster_elbow(hcluster_hyps, X, filename=fname, method='466')
-    # hcluster_elbow(hcluster_hyps, X, filename=fname, method='sklearn')
+    hcluster_elbow(hcluster_hyps, X, filename=fname, method='sklearn')
 
 

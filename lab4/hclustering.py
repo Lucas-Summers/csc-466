@@ -43,12 +43,17 @@ class AgglomerativeClustering:
         # initialize each point as a cluster (indices of X)
         clusters = [[i] for i in range(X.shape[0])]
         nodes = [{"type": "leaf", "height": 0, "data": X[i].tolist()} for i in range(X.shape[0])]
-  
+
+        dists = {}
         while len(clusters) > 1:
             min_dist = np.inf
             for i in range(len(clusters)):
                 for j in range(i+1, len(clusters)):
-                    dist = self.cluster_distance(clusters[i], clusters[j], X)
+                    itup, jtup = tuple(clusters[i]), tuple(clusters[j])
+                    if (itup, jtup) not in dists:
+                        dists[(itup, jtup)] = self.cluster_distance(clusters[i], clusters[j], X)
+                        dists[(jtup, itup)] = dists[(itup, jtup)]
+                    dist = dists[(itup, jtup)]
                     if dist < min_dist:
                         min_dist = dist
                         min_i, min_j = i, j
@@ -91,7 +96,7 @@ class AgglomerativeClustering:
         self.cut = ret
         return ret
     
-    def get_clusters(self, threshold):
+    def get_clusters(self, threshold, X_ref):
         '''
         Get the clusters at the specified threshold.
         If threshold < 1, it is treated as a proportion of the maximum height.
@@ -105,6 +110,14 @@ class AgglomerativeClustering:
             for leaf in leaves:
                 X.append(leaf['data'])
                 y.append(i)
+        # reorder y based on X_ref
+        y_new = []
+        for ref in X_ref:
+            # idx of ref in X
+            x_idx = np.where(np.all(X == ref, axis=1))[0][0]
+            y_new.append(y[x_idx])
+        y = y_new
+        X = X_ref
         return np.array(X), np.array(y)
         
     def get_leaves(self, node):
@@ -115,11 +128,11 @@ class AgglomerativeClustering:
             leaves += self.get_leaves(child)
         return leaves
     
-    def plot_clusters(self, threshold):
+    def plot_clusters(self, threshold, X_ref):
         '''
         Plot the clusters and centroids in 2D (using PCA if needed)
         '''
-        X, y = self.get_clusters(threshold)
+        X, y = self.get_clusters(threshold, X_ref)
         # If the data is more than 2D, apply PCA to reduce it to 2D
         if X.shape[1] > 2:
             # encode categorical columns as integers
@@ -141,6 +154,38 @@ class AgglomerativeClustering:
         plt.legend(loc='best')
 
         plt.show()
+
+    def metrics(self, X, y, labels=None):
+        '''
+        For each cluster,
+        1. Number of points in the cluster.
+        2. Coordinates of its centroid.
+        3. Maximum, minimum, and the average distance from a point to cluster centroid. 
+        4. Sum of Squared Errors (SSE) for the points in the cluster.
+        '''
+        points = np.array([len(X[y == i]) for i in np.unique(y)])
+        centroids = np.array([np.mean(X[y == i], axis=0) for i in np.unique(y)])
+        dists = [[self.metric(X[j], centroids[i]) for j in np.where(y == i)[0]] for i in np.unique(y)]
+        max_dists = np.array([np.max(d) for d in dists])
+        min_dists = np.array([np.min(d) for d in dists])
+        avg_dists = np.array([np.mean(d) for d in dists])
+        sse = np.array([np.sum(np.array(d)**2) for d in dists])
+        purity = []
+        if labels is not None:
+            for i in np.unique(y):
+                cluster_labels = labels[y == i]
+                unique_labels, counts = np.unique(cluster_labels, return_counts=True)
+                most_common_label = unique_labels[np.argmax(counts)]
+                purity.append(max(counts)/sum(counts))
+        return {
+            "points": points,
+            "centroids": centroids,
+            "max_dists": max_dists,
+            "min_dists": min_dists,
+            "avg_dists": avg_dists,
+            "sse": sse,
+            "purity": purity
+        }
 
     def score(self, X, y):
         silhouette = silhouette_score(X, y) if len(self.cut) > 1 else 0
@@ -196,7 +241,7 @@ if __name__ == "__main__":
     ap.add_argument("--plot", help="Plot the clusters", action="store_true")
     args = ap.parse_args()
 
-    df = pd.read_csv(args.filename)
+    df = pd.read_csv(args.filename, index_col=False)
 
     # filter by column name
     X = df.select_dtypes(include=[np.number])
@@ -216,11 +261,26 @@ if __name__ == "__main__":
 
     if args.threshold is not None:
         print("Cutting the dendrogram at threshold", args.threshold)
-        X, y = model.get_clusters(args.threshold)
+        Xout, cluster = model.get_clusters(args.threshold, X)
         print(model.tree["height"])
         if args.plot:
-            model.plot_clusters(args.threshold)
-        print(model.score(X, y))
+            model.plot_clusters(args.threshold, X)
+        labels = y if y.shape[1] == 1 else None
+        metrics = model.metrics(Xout, cluster, labels)
+        print("Metrics:")
+        for i in range(len(metrics["points"])):
+            print(f"Cluster {i}:")
+            print(f"Number of points: {metrics['points'][i]}")
+            print(f"Center: {', '.join(map(str, metrics['centroids'][i]))}")
+            print(f"Max Dist. to Center: {metrics['max_dists'][i]} Min Dist. to Center: {metrics['min_dists'][i]} Avg Dist. to Center: {metrics['avg_dists'][i]}")
+            print(f"SSE: {metrics['sse'][i]}")
+            if labels is not None:
+                print(f"Purity: {metrics['purity'][i]}")
+                Xout = np.concatenate((Xout, labels), axis=1)
+            for point in Xout[cluster == i]:
+                print(", ".join(map(str, point)))
+            print()
+
     if args.json:
         with open(args.out, "w") as f:
             json.dump(model.tree, f, indent=2)
