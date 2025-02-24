@@ -188,7 +188,7 @@ if __name__ == "__main__":
     csv = sys.argv[1]
     k = int(sys.argv[2])
     
-    X, y = load_data(csv, target=True)
+    X, y = load_data(csv, target=False)
     X, y = preprocess_data(X, y, "normal")
 
     model = Kmeans(n_clusters=k)

@@ -218,7 +218,7 @@ if __name__ == "__main__":
     epsilon = float(sys.argv[2])
     numPoints = int(sys.argv[3])
 
-    X, y = load_data(csv, target=True)
+    X, y = load_data(csv, target=False)
     X, y = preprocess_data(X, y, "normal")
     
     model = DBScan(epsilon=epsilon, minpts=numPoints)
