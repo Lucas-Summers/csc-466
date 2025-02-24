@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_score, calinski_harabasz_score, rand_score
 from sklearn.preprocessing import OrdinalEncoder
+from preprocessor import preprocess_data, load_data
 
 # try with `python hclustering.py csv/mammal_milk.csv --dot mm.dot`
 
@@ -14,7 +15,11 @@ def nums_only(x):
     Filter out non-numeric values from an array
     '''
     return x[np.vectorize(lambda val: isinstance(val, (int, float)))(x)]
+
 def euclidean_dist(x, y):
+    '''
+    Calculate Euclidean distance between two points
+    '''
     x, y = nums_only(x), nums_only(y)
     return np.sqrt(np.sum((x - y)**2))
 
@@ -188,6 +193,9 @@ class AgglomerativeClustering:
         }
 
     def score(self, X, y):
+        '''
+        Calculate all total cluster metrics
+        '''
         silhouette = silhouette_score(X, y) if len(self.cut) > 1 else 0
         ch_index = calinski_harabasz_score(X, y) if len(self.cut) > 1 else 0
 
@@ -226,7 +234,6 @@ class AgglomerativeClustering:
             dot_str = self.generate_dot_recur(child, dot_str)
         
         return dot_str
-        
 
 
 if __name__ == "__main__":
@@ -254,16 +261,17 @@ if __name__ == "__main__":
     #     encoder = OrdinalEncoder()
     #     df[categorical_columns] = encoder.fit_transform(df[categorical_columns])
     X = X.to_numpy()
+    #X, y = load_data(args.filename, target=False)
+    #X, y = preprocess_data(X, y, "normal")
 
     model = AgglomerativeClustering()
-    print("Fitting the model...")
     model.fit(X)
 
     if args.threshold is not None:
         print("Cutting the dendrogram at threshold", args.threshold)
         Xout, cluster = model.get_clusters(args.threshold, X)
-        print(model.tree["height"])
-        if args.plot:
+        #print(model.tree["height"])
+        if args.plot == True:
             model.plot_clusters(args.threshold, X)
         labels = y if y.shape[1] == 1 else None
         metrics = model.metrics(Xout, cluster, labels)

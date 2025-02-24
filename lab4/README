@@ -12,3 +12,16 @@ numpy
 ```
 If not already installed, run `pip install -r requirements.txt`.
 
+## Files
+kmeans.py: our kmeans clustering model class
+hclustering.py: our agglomerative hierarchical clustering model class
+dbscan.py: our DBScan clustering model class
+preprocessor.py: helper functions to load + encode csv data, normalizing/standardizing
+                 data, as well as removing outliers
+
+## Example commands (needs `iris/csv` in `csv/`)
+```
+python kmeans.py csv/iris.csv 3
+python hclustering.py csv/iris.csv  --dot iris.dot
+python dbscan.py csv/iris.csv 0.4 10
+```

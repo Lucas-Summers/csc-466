@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
 import sys
-from sklearn.preprocessing import OrdinalEncoder
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, rand_score
 from preprocessor import preprocess_data
 from preprocessor import load_data
+
+# try it with `python dbscan csv/iris.csv 0.4 10`
 
 class DBScan:
     def __init__(self, epsilon=0.5, minpts=4):
@@ -16,7 +17,9 @@ class DBScan:
         self.noise = None
     
     def find_neighbors(self, X):
-        """Computes the pairwise distance matrix"""
+        '''
+        Computes the pairwise distance matrix and finds neighboring points
+        '''
         n = len(X)
         distance_matrix = np.zeros((n, n))
         for i in range(n):
@@ -26,7 +29,9 @@ class DBScan:
         return {i: np.where(distance_matrix[i] <= self.epsilon)[0].tolist() for i in range(len(distance_matrix))}
 
     def expand_cluster(self, point, cluster_id, cluster_labels, neighbors, core_points):
-        """Recursively expands the cluster."""
+        '''
+        Recursively expands the cluster.
+        '''
         stack = [point]
         while stack:
             p = stack.pop()
@@ -40,7 +45,9 @@ class DBScan:
 
 
     def fit(self, X):
-        """Implements the DBSCAN clustering algorithm."""
+        '''
+        Implements the DBSCAN model to the provided data
+        '''
         n = len(X)
         neighbors = self.find_neighbors(X)
         
@@ -62,9 +69,16 @@ class DBScan:
                 self.clusters[label].append(i)
 
     def predict(self, X):
+        '''
+        Predict the cluster assignment for new data points
+        '''
         pass
 
     def plot_clusters(self, X):
+        '''
+        Plot the clusters and centroids in 2D (using PCA if needed)
+        '''
+        # If the data is more than 2D, apply PCA to reduce it to 2D
         if X.shape[1] > 2:
             pca = PCA(n_components=2)
             X_reduced = pca.fit_transform(X)
@@ -160,6 +174,9 @@ class DBScan:
         return cluster_stats, intercluster_dists, radius_distance_ratios
 
     def score(self, X, y=None):
+        '''
+        Compute all total cluster metrics as well as metrics for each cluster
+        '''
         n_clusters = len(self.clusters)
         if n_clusters == 0:
             return {
@@ -201,18 +218,11 @@ if __name__ == "__main__":
     epsilon = float(sys.argv[2])
     numPoints = int(sys.argv[3])
 
-
-    X, y = load_data(csv, target=False)
+    X, y = load_data(csv, target=True)
     X, y = preprocess_data(X, y, "normal")
     
-    # for iris or data with ground truth
-    #y = X[:, -1]
-    #X = X[:, :-1]
-
     model = DBScan(epsilon=epsilon, minpts=numPoints)
     model.fit(X)
-    # print(model.clusters)
-    # print(model.noise)
     score = model.score(X, y)
 
     for cluster in score['stats']:
@@ -222,8 +232,8 @@ if __name__ == "__main__":
               f"  Silhouette Score: {cluster['silhouette']:.4f}\n"
               f"  SSE: {cluster['sse']:.4f}\n"
               f"  {cluster['size']} Points:")
-        for point in cluster['points']:
-            print("  ", ', '.join(f'{val:.2f}' for val in point))
+        #for point in cluster['points']:
+        #    print("  ", ', '.join(f'{val:.2f}' for val in point))
  
     print("\n=== Clustering Metrics ===")
     print(f"Avg Radius-to-Intercluster Distance Ratio: {score['radius_distance_ratio']:.4f}")

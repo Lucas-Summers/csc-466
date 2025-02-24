@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 import sys
-from sklearn.preprocessing import OrdinalEncoder
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from sklearn.metrics import silhouette_samples, silhouette_score, calinski_harabasz_score, rand_score
@@ -58,7 +57,7 @@ class Kmeans:
     
     def fit(self, X):
         '''
-        Fit KMeans model to the data with SSE-based stopping criterion
+        Fit KMeans model to the provided data with SSE-based stopping criterion
         '''
         self.centroids = self.initialize_centroids(X)
         prev_sse = 0
@@ -161,6 +160,9 @@ class Kmeans:
         return cluster_stats, intercluster_dists, radius_distance_ratios
 
     def score(self, X, y=None):
+        '''
+        Compute all total cluster metrics as well as metrics for each cluster
+        '''
         silhouette = silhouette_score(X, self.labels) if self.n_clusters > 1 else 0
         ch_index = calinski_harabasz_score(X, self.labels) if self.n_clusters > 1 else 0
         rand_index = rand_score(y, self.labels) if y is not None else None
@@ -186,12 +188,13 @@ if __name__ == "__main__":
     csv = sys.argv[1]
     k = int(sys.argv[2])
     
-    X, y = load_data(csv, target=False)
+    X, y = load_data(csv, target=True)
     X, y = preprocess_data(X, y, "normal")
 
     model = Kmeans(n_clusters=k)
     model.fit(X)
     score = model.score(X, y)
+
     for cluster in score['stats']:
         print(f"Cluster {cluster['label']}:\n"
               f"  Center: {', '.join(f'{val:.2f}' for val in cluster['centroid'])}\n"
