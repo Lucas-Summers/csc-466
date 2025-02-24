@@ -234,7 +234,45 @@ class AgglomerativeClustering:
             dot_str = self.generate_dot_recur(child, dot_str)
         
         return dot_str
+        
+def cluster_score(X, y, gt=None):
+    '''
+    Given Points X and their cluster labels y, compute the following metrics:
+    • The ratio of cluster radiuses to intercluster distances (computed using whatever intercluster distance metric you select).
+    • The Silhuette score of the clustering
+    • The Calin ski-Harabasz index
+    • If the dataset comes with ground truth (you can use the info from the header), also report the Rand Index of the clustering.
+    '''
+    cluster_centers = []
+    cluster_radiuses = []
+    X = np.array([nums_only(row) for row in X], dtype=float)
+    gt = gt.flatten() if gt is not None else None
 
+    for i in np.unique(y):
+        cluster_points = X[y == i]
+        cluster_center = np.mean(cluster_points, axis=0)
+        cluster_centers.append(cluster_center)
+        distances = np.linalg.norm(cluster_points - cluster_center, axis=1)
+        # radius is the maximum distance from the center
+        cluster_radius = np.max(distances) if len(distances) > 0 else 0
+        cluster_radiuses.append(cluster_radius) 
+    inter_cluster_dists = []
+    for i in range(len(cluster_centers)):
+        for j in range(i+1, len(cluster_centers)):
+            dist = np.linalg.norm(cluster_centers[i] - cluster_centers[j])
+            inter_cluster_dists.append(dist)
+    radius_distance_ratio = np.mean([(cluster_radiuses[i] + cluster_radiuses[j]) / dist for i, dist in enumerate(inter_cluster_dists) for j in range(i+1, len(cluster_centers)) if dist > 0])
+    sil = silhouette_score(X, y) if len(np.unique(y)) > 1 else 0
+    ch_index = calinski_harabasz_score(X, y) if len(np.unique(y)) > 1 else 0
+    rand_index = rand_score(gt, y) if gt is not None else None
+    return {
+        "radius_distance_ratio": radius_distance_ratio,
+        "silhouette_score": sil,
+        "ch_index": ch_index,
+        "rand_index": rand_index
+    }
+
+        
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
@@ -289,6 +327,13 @@ if __name__ == "__main__":
             for point in Xout[cluster == i]:
                 print(", ".join(map(str, point)))
             print()
+        print("=== Clustering Metrics ===")
+        score = cluster_score(Xout, cluster, gt=y.to_numpy() if y.shape[1] == 1 else None)            
+        print(f"Avg Radius-to-Intercluster Distance Ratio: {score['radius_distance_ratio']:.4f}")
+        print(f"Silhouette Score: {score['silhouette_score']:.4f}")
+        print(f"Calinski-Harabasz Index: {score['ch_index']:.4f}")
+        if score['rand_index'] is not None:
+            print(f"Rand Index: {score['rand_index']:.4f}")
 
     if args.json:
         with open(args.out, "w") as f:
