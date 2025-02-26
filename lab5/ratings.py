@@ -56,7 +56,8 @@ class RatingsMatrix:
             # Regular weighted sum
             num = np.nansum(similarity_vector * self.ratings[:, item_id] * valid_ratings_mask)
             denom = np.nansum(np.abs(similarity_vector) * valid_ratings_mask)
-            prediction = num / denom if denom != 0 else np.nan
+            prediction = num / denom if denom != 0 else self.user_means[user_id]
+            #prediction = num / denom if denom != 0 else np.nan
 
         # Restore original value if it was temporarily replaced
         if -10.00 <= original_value <= 10.00:
@@ -74,20 +75,18 @@ class RatingsMatrix:
             similarity(self.ratings[user_id], self.ratings[other]) if other != user_id else -np.inf
             for other in range(len(self.ratings))
         ])
+        
+        valid_users = np.where(~np.isnan(self.ratings[:, item_id]))[0]  # Users who rated item
 
-        # Get indices of the k most similar users
-        top_k_users = np.argpartition(similarity_vector, -k)[-k:]
-        top_k_users = top_k_users[np.argsort(similarity_vector[top_k_users])][::-1]  # Sort descending
-        #top_k_users = np.argsort(similarity_vector)[-k:][::-1]  # Sort descending
+        if len(valid_users) < k:  # Ensure we have enough neighbors
+            k = len(valid_users)
 
-        # Extract valid ratings from the top k users for the target item
-        valid_ratings_mask = ~np.isnan(self.ratings[top_k_users, item_id])
+        # Select top-k users from those who rated the item
+        top_k_users = valid_users[np.argsort(similarity_vector[valid_users])[-k:]][::-1]  # Sort descending
 
-        # Get ratings of top k users for the target item
-        neighbor_ratings = self.ratings[top_k_users, item_id] * valid_ratings_mask
-
-        # Compute weighted sum using similarities
-        sim_top_k = similarity_vector[top_k_users] * valid_ratings_mask
+        # Extract valid ratings from the top-k users
+        neighbor_ratings = self.ratings[top_k_users, item_id]
+        sim_top_k = similarity_vector[top_k_users]
 
         if use_adjusted:
             # Use adjusted ratings (subtract user means)
@@ -99,9 +98,9 @@ class RatingsMatrix:
             # Use regular weighted sum
             num = np.nansum(sim_top_k * neighbor_ratings)
             denom = np.nansum(np.abs(sim_top_k))
-            prediction = num / denom if denom != 0 else np.nan
+            prediction = num / denom if denom != 0 else self.user_means[user_id]
+            #prediction = num / denom if denom != 0 else np.nan
 
-        # Restore the original value if it was temporarily replaced
         if -10.00 <= original_value <= 10.00:
             self.ratings[user_id][item_id] = original_value  
 
@@ -130,8 +129,4 @@ def pearson_similarity(ratings1, ratings2):
 
 if __name__ == "__main__":
     r = RatingsMatrix("csv/jester-data-1.csv")
-    print(r.mean_utility())
-    print(r.predict_rating(1, 1, cosine_similarity, use_adjusted=False))
-    print(r.predict_rating(1, 1, cosine_similarity, use_adjusted=True))
-    print(r.predict_rating(1, 1, pearson_similarity, use_adjusted=False))
-    print(r.predict_rating(1, 1, pearson_similarity, use_adjusted=True))
+    print(r.predict_rating_nn(16751, 8, pearson_similarity, use_adjusted=False))

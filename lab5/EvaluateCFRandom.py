@@ -14,6 +14,7 @@ def main(method, size, repeats, nnn, adjusted):
         size = len(non_nan_ratings)
 
     maes = []
+    overall_metrics = {"TP": 0, "FP": 0, "FN": 0, "TN": 0}
     for i in range(repeats):
         test_cases = random.sample(non_nan_ratings, size)
         errs = []
@@ -31,15 +32,46 @@ def main(method, size, repeats, nnn, adjusted):
             print(f"{user_id}, {item_id}, {actual_rating}, {prediction}, {delta_rating}")
             errs.append(delta_rating)
 
+            # Determine recommendation
+            recommend = prediction >= 5
+            actual_recommend = actual_rating >= 5
+
+            # Confusion matrix counts
+            if recommend and actual_recommend:
+                overall_metrics["TP"] += 1
+            elif recommend and not actual_recommend:
+                overall_metrics["FP"] += 1
+            elif not recommend and actual_recommend:
+                overall_metrics["FN"] += 1
+            else:
+                overall_metrics["TN"] += 1
+
         print("\n-- Metrics --")
         print("MAE:", np.mean(errs))
         maes.append(np.mean(errs))
+
+    # Compute final metrics
+    TP, FP, FN, TN = overall_metrics["TP"], overall_metrics["FP"], overall_metrics["FN"], overall_metrics["TN"]
+    precision = TP / (TP + FP) if (TP + FP) > 0 else 0
+    recall = TP / (TP + FN) if (TP + FN) > 0 else 0
+    f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+    accuracy = (TP + TN) / (TP + FP + FN + TN) if (TP + FP + FN + TN) > 0 else 0
+    conf_matrix = pd.DataFrame(
+        [[overall_metrics["TN"], overall_metrics["FP"]], 
+         [overall_metrics["FN"], overall_metrics["TP"]]],
+        index=["Actual: Not Recommend", "Actual: Recommend"],
+        columns=["Predicted: Not Recommend", "Predicted: Recommend"]
+    )
     
     print("\n-- Summary --")
     print("Mean MAE:", np.mean(maes))
     print("Std Dev MAE:", np.std(maes))
 
-
+    #print(f"Confusion Matrix:\nTP: {TP}, FP: {FP}, FN: {FN}, TN: {TN}")
+    print("\nConfusion Matrix:")
+    print(conf_matrix)
+    print(f"\nPrecision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1_score:.4f}")
+    print(f"Overall Accuracy: {accuracy:.4f}")
 
 
 if __name__ == "__main__":
