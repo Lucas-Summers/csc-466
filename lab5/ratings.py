@@ -6,10 +6,11 @@ class RatingsMatrix:
         self.ratings = self.load_data(filepath)
         self.user_means = np.nanmean(self.ratings, axis=1)  # Mean per user, ignoring NaNs
 
-    def load_data(self, f):
+    def load_data(self, f, verbose=False):
         df = pd.read_csv(f, header=None)
         df = df.iloc[:, 1:].replace(99, np.nan)
-        print(df.head())
+        if verbose:
+            print(df.head())
         return df.to_numpy()
     
     def get_user_ratings(self, user_id):
@@ -22,6 +23,10 @@ class RatingsMatrix:
         return np.nanmean(self.ratings)
     
     def predict_rating(self, user_id, item_id, similarity, use_adjusted=False):
+        '''
+        Predict the rating of a user for an item using the similarity function.
+        If use_adjusted is True, the adjusted weighted sum is used.
+        '''
         original_value = self.ratings[user_id][item_id]
         if -10.00 <= original_value <= 10.00:
             self.ratings[user_id][item_id] = np.nan  
