@@ -13,6 +13,12 @@ class RatingsMatrix:
             print(df.head())
         return df.to_numpy()
     
+    def get_non_nan_params(self):
+        '''
+        returns a list of tuples of the form (user_id, item_id) for all non-NaN values in the matrix
+        '''
+        return [(i, j) for i in range(len(self.ratings)) for j in range(len(self.ratings[i])) if not np.isnan(self.ratings[i][j])]
+    
     def get_user_ratings(self, user_id):
         return self.ratings[user_id]
 
