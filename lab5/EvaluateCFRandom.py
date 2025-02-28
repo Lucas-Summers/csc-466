@@ -4,13 +4,19 @@ import pandas as pd
 import random
 import argparse
 
+def vprint(*args, **kwargs):
+    if args[-1] is False:
+        return
+    if args[-1] is True:
+        args = args[:-1]
+    print(*args)
 
-def main(method, size, repeats, nnn, adjusted):
+def main(method, size, repeats, nnn, adjusted, k=5, verbose=True):
     r = RatingsMatrix("csv/jester-data-1.csv")
-    similarity = cosine_similarity if "cosine" in args.method else pearson_similarity
+    similarity = cosine_similarity if "cosine" in method else pearson_similarity
     non_nan_ratings = r.get_non_nan_params()
     if size > len(non_nan_ratings):
-        print(f"Size is greater than the number of non-NaN ratings {size}, setting size to the number of non-NaN ratings {len(non_nan_ratings)}")
+        vprint(f"Size is greater than the number of non-NaN ratings {size}, setting size to the number of non-NaN ratings {len(non_nan_ratings)}", verbose)
         size = len(non_nan_ratings)
 
     maes = []
@@ -18,18 +24,18 @@ def main(method, size, repeats, nnn, adjusted):
     for i in range(repeats):
         test_cases = random.sample(non_nan_ratings, size)
         errs = []
-        print(f"\n-- Repeat {i} --")
-        print("userID, itemID, Actual_Rating, Predicted_Rating, Delta_Rating")
+        vprint(f"\n-- Repeat {i} --", verbose)
+        vprint("userID, itemID, Actual_Rating, Predicted_Rating, Delta_Rating", verbose)
         for user_id, item_id in test_cases:
             if nnn:
-                prediction = r.predict_rating_nn(user_id, item_id, similarity, use_adjusted=adjusted)
+                prediction = r.predict_rating_nn(user_id, item_id, similarity, use_adjusted=adjusted, k=k)
             else:
                 prediction = r.predict_rating(user_id, item_id, similarity, use_adjusted=adjusted)
             
             actual_rating = r.ratings[user_id][item_id]
             delta_rating = np.abs(actual_rating - prediction)
 
-            print(f"{user_id}, {item_id}, {actual_rating}, {prediction}, {delta_rating}")
+            vprint(f"{user_id}, {item_id}, {actual_rating}, {prediction}, {delta_rating}", verbose)
             errs.append(delta_rating)
 
             # Determine recommendation
@@ -46,8 +52,8 @@ def main(method, size, repeats, nnn, adjusted):
             else:
                 overall_metrics["TN"] += 1
 
-        print("\n-- Metrics --")
-        print("MAE:", np.mean(errs))
+        vprint("\n-- Metrics --", verbose)
+        vprint("MAE:", np.mean(errs), verbose)
         maes.append(np.mean(errs))
 
     # Compute final metrics
@@ -72,6 +78,7 @@ def main(method, size, repeats, nnn, adjusted):
     print(conf_matrix)
     print(f"\nPrecision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1_score:.4f}")
     print(f"Overall Accuracy: {accuracy:.4f}")
+    return np.mean(maes), np.std(maes), precision, recall, f1_score, accuracy
 
 
 if __name__ == "__main__":
