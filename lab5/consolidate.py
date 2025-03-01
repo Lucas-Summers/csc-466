@@ -26,7 +26,7 @@ def consolidate_results(results_dir="results", output_file="consolidated_results
                 with open(os.path.join(results_dir, file), "r") as f:
                     content = f.readline().strip()
                     # Write the consolidated row to the CSV file
-                    csvwriter.writerow([method, n, size, repeats] + content.split(','))
+                    csvwriter.writerow([method, n, size, repeats] + content.split(',')[1:])
 
 # Call the function to consolidate results
 consolidate_results()
