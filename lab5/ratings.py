@@ -65,7 +65,7 @@ class RatingsMatrix:
 
         return prediction
 
-    def predict_rating_nn(self, user_id, item_id, similarity, k=5, use_adjusted=False):
+    def predict_rating_nn(self, user_id, item_id, similarity, use_adjusted=False, k=5):
         original_value = self.ratings[user_id][item_id]
         if -10.00 <= original_value <= 10.00:
             self.ratings[user_id][item_id] = np.nan  
@@ -113,7 +113,7 @@ def cosine_similarity(ratings1, ratings2):
     
     ratings1, ratings2 = ratings1[mask], ratings2[mask]
     num = np.dot(ratings1, ratings2)
-    denom = np.sqrt(np.sum(ratings1 ** 2)) * np.sqrt(np.sum(ratings2 ** 2))
+    denom = np.linalg.norm(ratings1) * np.linalg.norm(ratings2)
     return num / denom if denom != 0 else 0
 
 def pearson_similarity(ratings1, ratings2):
@@ -123,8 +123,10 @@ def pearson_similarity(ratings1, ratings2):
     
     ratings1, ratings2 = ratings1[mask], ratings2[mask]
     mean1, mean2 = np.mean(ratings1), np.mean(ratings2)
-    num = np.sum((ratings1 - mean1) * (ratings2 - mean2))
-    denom = np.sqrt(np.sum((ratings1 - mean1) ** 2) * np.sum((ratings2 - mean2) ** 2))
+    #num = np.sum((ratings1 - mean1) * (ratings2 - mean2))
+    #denom = np.sqrt(np.sum((ratings1 - mean1) ** 2) * np.sum((ratings2 - mean2) ** 2))
+    num = np.dot(ratings1 - mean1, ratings2 - mean2)
+    denom = np.linalg.norm(ratings1 - mean1) * np.linalg.norm(ratings2 - mean2)
     return num / denom if denom != 0 else 0
 
 if __name__ == "__main__":

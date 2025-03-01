@@ -1,4 +1,4 @@
-from EvaluateCFRandom import main as cf_random
+from EvaluateCFRandom import eval_cf_random
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -10,7 +10,7 @@ def eval_nn(neigbs=range(1, 100, 25), size=100, repeats=3):
     '''
     results = []
     for n in tqdm(neigbs):
-        mmae, std, prec, rec, f1, acc = cf_random(method="cosine", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
+        mmae, std, prec, rec, f1, acc = eval_cf_random(method="cosine", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
         results.append((n, mmae, std, prec, rec, f1, acc))
     plot_results(results, 
                 "Number of Neighbors",
@@ -19,7 +19,7 @@ def eval_nn(neigbs=range(1, 100, 25), size=100, repeats=3):
     
     results = []
     for n in tqdm(neigbs):
-        mmae, std, prec, rec, f1, acc = cf_random(method="pearson", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
+        mmae, std, prec, rec, f1, acc = eval_cf_random(method="pearson", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
         results.append((n, mmae, std, prec, rec, f1, acc))
     plot_results(results, 
                 "Number of Neighbors",

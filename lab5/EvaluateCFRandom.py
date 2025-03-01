@@ -11,7 +11,7 @@ def vprint(*args, **kwargs):
         args = args[:-1]
     print(*args)
 
-def main(method, size, repeats, nnn, adjusted, k=5, verbose=True):
+def eval_cf_random(method, size, repeats, nnn, adjusted, k=5, verbose=True):
     r = RatingsMatrix("csv/jester-data-1.csv")
     similarity = cosine_similarity if "cosine" in method else pearson_similarity
     non_nan_ratings = r.get_non_nan_params()
@@ -72,22 +72,16 @@ def main(method, size, repeats, nnn, adjusted, k=5, verbose=True):
     print("\n-- Summary --")
     print("Mean MAE:", np.mean(maes))
     print("Std Dev MAE:", np.std(maes))
-
-    #print(f"Confusion Matrix:\nTP: {TP}, FP: {FP}, FN: {FN}, TN: {TN}")
     print("\nConfusion Matrix:")
     print(conf_matrix)
     print(f"\nPrecision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1_score:.4f}")
     print(f"Overall Accuracy: {accuracy:.4f}")
+
     return np.mean(maes), np.std(maes), precision, recall, f1_score, accuracy
 
 
 if __name__ == "__main__":
-    '''
-    EvaluateCFRandom is, essentially, a wrapper around the first evaluation method discussed above. When run with no parameters, it shall print a help message indicating the list of collaborative filtering methods implemented and their Ids. Otherwise, the program shall take two parameters:
-$ python EvaluateCFRandom.py Method Size Repeats
-Here, Method is the collaborative filtering method and size is the number of test cases to generate. The
-program shall execute the first evaluation method and print the output.
-    '''
+    # try `python EvaluateCFRandom pearson 5 5`
     parser = argparse.ArgumentParser(description="Evaluate a collaborative filtering algorithm")
     parser.add_argument("method", help="The method to evaluate. Expects 'cosine' or 'pearson'")
     parser.add_argument("size", help="The number of test cases to generate", type=int)
@@ -97,4 +91,4 @@ program shall execute the first evaluation method and print the output.
     nnn = "nnn" in args.method
     adjusted = "adjusted" in args.method
 
-    main(args.method, args.size, args.repeats, nnn, adjusted)
+    eval_cf_random(args.method, args.size, args.repeats, nnn, adjusted)
