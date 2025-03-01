@@ -10,8 +10,8 @@ def consolidate_results(results_dir="results", output_file="consolidated_results
         csvwriter = csv.writer(csvfile)
         
         # Write the header row
-        csvwriter.writerow(["method", "n", "size", "repeats", "mmae", "std", "prec", "rec", "f1", "acc"])
-        
+        csvwriter.writerow(["method", "n", "size", "repeats", "adjusted", "mmae", "std", "prec", "rec", "f1", "acc"])
+
         # Iterate over each file in the results directory
         for file in files:
             if file.endswith(".txt"):
@@ -20,13 +20,18 @@ def consolidate_results(results_dir="results", output_file="consolidated_results
                 method = parts[0]
                 n = parts[1]
                 size = parts[2]
-                repeats = parts[3].split('.')[0]
+                adjusted = "nonadjusted"
+                if "adjusted" in file:
+                    repeats = parts[3]
+                    adjusted = "adjusted"
+                else:
+                    repeats = parts[3].split('.')[0]
                 
                 # Read the content of the file
                 with open(os.path.join(results_dir, file), "r") as f:
                     content = f.readline().strip()
                     # Write the consolidated row to the CSV file
-                    csvwriter.writerow([method, n, size, repeats] + content.split(',')[1:])
+                    csvwriter.writerow([method, n, size, repeats, adjusted] + content.split(',')[1:])
 
 # Call the function to consolidate results
 consolidate_results()
