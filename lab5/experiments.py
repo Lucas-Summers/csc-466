@@ -50,57 +50,51 @@ def test_best_n_neighbors():
     print(f"Best N value (List-based): {best_n_list} with MAE: {min(list_mae)} and Accuracy: {list_accuracy[np.argmin(list_mae)]}")
     print(f"Best N value (Random-based): {best_n_random} with MAE: {min(random_mae)} and Accuracy: {random_accuracy[np.argmin(random_mae)]}")
 
-def test_adjusted_vs_regular():
+def test_all_models():
     num_reps = 5  # Number of repetitions for random evaluation
 
-    # Store results as lists for random evaluation (each will have 10 values)
-    mae_nnn_adjusted, acc_nnn_adjusted = [], []
-    mae_nnn, acc_nnn = [], []
-    mae_regular, acc_regular = [], []
-    mae_regular_adjusted, acc_regular_adjusted = [], []
+    models = [
+        ("NNN Pearson (Adjusted)", "pearson", True, True),
+        ("NNN Cosine (Adjusted)", "cosine", True, True),
+        ("Regular Pearson (Adjusted)", "pearson", False, True),
+        ("Regular Cosine (Adjusted)", "cosine", False, True),
+        ("NNN Pearson (Unadjusted)", "pearson", True, False),
+        ("NNN Cosine (Unadjusted)", "cosine", True, False),
+        ("Regular Pearson (Unadjusted)", "pearson", False, False),
+        ("Regular Cosine (Unadjusted)", "cosine", False, False),
+    ]
 
-    # --- List Evaluation (Single Run) ---
-    mae_nnn_adjusted_list, _, _, _, _, acc_nnn_adjusted_list = eval_cf_list("pearson", "list.txt", True, True, k=19)
-    mae_nnn_list, _, _, _, _, acc_nnn_list = eval_cf_list("pearson", "list.txt", True, False, k=19)
-    mae_regular_list, _, _, _, _, acc_regular_list = eval_cf_list("pearson", "list.txt", False, False)
-    mae_regular_adjusted_list, _, _, _, _, acc_regular_adjusted_list = eval_cf_list("pearson", "list.txt", False, True)
+    mae_list, acc_list = [], []
+    mae_random, acc_random = [[] for _ in models], [[] for _ in models]
 
-    # --- Random Evaluation (Looping for 10 Repetitions) ---
+    # --- List Evaluation ---
+    for model_name, sim_metric, nnn, adjusted in models:
+        mae, _, _, _, _, acc = eval_cf_list(sim_metric, "list.txt", nnn, adjusted, k=19)
+        mae_list.append(mae)
+        acc_list.append(acc)
+
+    # --- Random Evaluation ---
     for _ in range(num_reps):
-        mae_nnn_adjusted_val, _, _, _, _, acc_nnn_adjusted_val = eval_cf_random("pearson", 5, 1, True, True, k=19)
-        mae_nnn_val, _, _, _, _, acc_nnn_val = eval_cf_random("pearson", 5, 1, True, False, k=19)
-        mae_regular_val, _, _, _, _, acc_regular_val = eval_cf_random("pearson", 5, 1, False, False)
-        mae_regular_adjusted_val, _, _, _, _, acc_regular_adjusted_val = eval_cf_random("pearson", 5, 1, False, True)
+        for i, (model_name, sim_metric, nnn, adjusted) in enumerate(models):
+            mae, _, _, _, _, acc = eval_cf_random(sim_metric, 5, 1, nnn, adjusted, k=19)
+            mae_random[i].append(mae)
+            acc_random[i].append(acc)
 
-        mae_nnn_adjusted.append(mae_nnn_adjusted_val)
-        acc_nnn_adjusted.append(acc_nnn_adjusted_val)
-        mae_nnn.append(mae_nnn_val)
-        acc_nnn.append(acc_nnn_val)
-        mae_regular.append(mae_regular_val)
-        acc_regular.append(acc_regular_val)
-        mae_regular_adjusted.append(mae_regular_adjusted_val)
-        acc_regular_adjusted.append(acc_regular_adjusted_val)
-
-    # Labels
-    labels = ["NNN Adjusted", "NNN", "Regular", "Regular Adjusted"]
+    labels = [m[0] for m in models]
     x = np.arange(len(labels))
 
     # --- PLOT 1: List Evaluation (Bar Charts) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    # MAE Bar Chart
-    axes[0].bar(x, [mae_nnn_adjusted_list, mae_nnn_list, mae_regular_list, mae_regular_adjusted_list], 
-                color=["blue", "green", "red", "purple"])
+    axes[0].bar(x, mae_list, color=["blue", "green", "red", "purple", "cyan", "orange", "pink", "gray"])
     axes[0].set_xticks(x)
-    axes[0].set_xticklabels(labels, rotation=45)
+    axes[0].set_xticklabels(labels, rotation=45, ha='right')
     axes[0].set_ylabel("MAE")
     axes[0].set_title("List Evaluation - MAE")
 
-    # Accuracy Bar Chart
-    axes[1].bar(x, [acc_nnn_adjusted_list, acc_nnn_list, acc_regular_list, acc_regular_adjusted_list], 
-                color=["blue", "green", "red", "purple"])
+    axes[1].bar(x, acc_list, color=["blue", "green", "red", "purple", "cyan", "orange", "pink", "gray"])
     axes[1].set_xticks(x)
-    axes[1].set_xticklabels(labels, rotation=45)
+    axes[1].set_xticklabels(labels, rotation=45, ha='right')
     axes[1].set_ylabel("Accuracy")
     axes[1].set_title("List Evaluation - Accuracy")
 
@@ -108,179 +102,21 @@ def test_adjusted_vs_regular():
     plt.show()
 
     # --- PLOT 2: Random Evaluation (Side-by-Side Line Graphs) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
-    reps = np.arange(1, num_reps + 1)  # X-axis (Repetitions)
+    reps = np.arange(1, num_reps + 1)
 
     # Left: MAE
-    axes[0].plot(reps, mae_nnn_adjusted, "bo-", label="NNN Adjusted - MAE")
-    axes[0].plot(reps, mae_nnn, "go-", label="NNN - MAE")
-    axes[0].plot(reps, mae_regular, "ro-", label="Regular - MAE")
-    axes[0].plot(reps, mae_regular_adjusted, "mo-", label="Regular Adjusted - MAE")
+    for i, label in enumerate(labels):
+        axes[0].plot(reps, mae_random[i], marker="o", label=f"{label} - MAE")
     axes[0].set_xlabel("Repetitions")
     axes[0].set_ylabel("MAE")
     axes[0].set_title("Random Evaluation - MAE")
     axes[0].legend()
 
     # Right: Accuracy
-    axes[1].plot(reps, acc_nnn_adjusted, "b--", label="NNN Adjusted - Accuracy")
-    axes[1].plot(reps, acc_nnn, "g--", label="NNN - Accuracy")
-    axes[1].plot(reps, acc_regular, "r--", label="Regular - Accuracy")
-    axes[1].plot(reps, acc_regular_adjusted, "m--", label="Regular Adjusted - Accuracy")
-    axes[1].set_xlabel("Repetitions")
-    axes[1].set_ylabel("Accuracy")
-    axes[1].set_title("Random Evaluation - Accuracy")
-    axes[1].legend()
-
-    plt.tight_layout()
-    plt.show()
-
-def test_pearson_vs_cosine():
-    num_reps = 5  # Number of repetitions for random evaluation
-
-    # Store results for random evaluation (each will have 10 values)
-    mae_nnn_pearson, acc_nnn_pearson = [], []
-    mae_nnn_cosine, acc_nnn_cosine = [], []
-    mae_regular_pearson, acc_regular_pearson = [], []
-    mae_regular_cosine, acc_regular_cosine = [], []
-
-    # --- List Evaluation (Single Run) ---
-    mae_nnn_pearson_list, _, _, _, _, acc_nnn_pearson_list = eval_cf_list("pearson", "list.txt", True, True, k=19)
-    mae_nnn_cosine_list, _, _, _, _, acc_nnn_cosine_list = eval_cf_list("cosine", "list.txt", True, True, k=19)
-    mae_regular_pearson_list, _, _, _, _, acc_regular_pearson_list = eval_cf_list("pearson", "list.txt", False, True)
-    mae_regular_cosine_list, _, _, _, _, acc_regular_cosine_list = eval_cf_list("cosine", "list.txt", False, True)
-
-    # --- Random Evaluation (Looping for 10 Repetitions) ---
-    for _ in range(num_reps):
-        mae_nnn_pearson_val, _, _, _, _, acc_nnn_pearson_val = eval_cf_random("pearson", 5, 1, True, True, k=19)
-        mae_nnn_cosine_val, _, _, _, _, acc_nnn_cosine_val = eval_cf_random("cosine", 5, 1, True, True, k=19)
-        mae_regular_pearson_val, _, _, _, _, acc_regular_pearson_val = eval_cf_random("pearson", 5, 1, False, True)
-        mae_regular_cosine_val, _, _, _, _, acc_regular_cosine_val = eval_cf_random("cosine", 5, 1, False, True)
-
-        mae_nnn_pearson.append(mae_nnn_pearson_val)
-        acc_nnn_pearson.append(acc_nnn_pearson_val)
-        mae_nnn_cosine.append(mae_nnn_cosine_val)
-        acc_nnn_cosine.append(acc_nnn_cosine_val)
-        mae_regular_pearson.append(mae_regular_pearson_val)
-        acc_regular_pearson.append(acc_regular_pearson_val)
-        mae_regular_cosine.append(mae_regular_cosine_val)
-        acc_regular_cosine.append(acc_regular_cosine_val)
-
-    # Labels
-    labels = ["NNN Pearson", "NNN Cosine", "Regular Pearson", "Regular Cosine"]
-    x = np.arange(len(labels))
-
-    # --- PLOT 1: List Evaluation (Bar Charts) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    # MAE Bar Chart
-    axes[0].bar(x, [mae_nnn_pearson_list, mae_nnn_cosine_list, mae_regular_pearson_list, mae_regular_cosine_list], 
-                color=["blue", "green", "red", "purple"])
-    axes[0].set_xticks(x)
-    axes[0].set_xticklabels(labels, rotation=45)
-    axes[0].set_ylabel("MAE")
-    axes[0].set_title("List Evaluation - MAE")
-
-    # Accuracy Bar Chart
-    axes[1].bar(x, [acc_nnn_pearson_list, acc_nnn_cosine_list, acc_regular_pearson_list, acc_regular_cosine_list], 
-                color=["blue", "green", "red", "purple"])
-    axes[1].set_xticks(x)
-    axes[1].set_xticklabels(labels, rotation=45)
-    axes[1].set_ylabel("Accuracy")
-    axes[1].set_title("List Evaluation - Accuracy")
-
-    plt.tight_layout()
-    plt.show()
-
-    # --- PLOT 2: Random Evaluation (Side-by-Side Line Graphs) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    reps = np.arange(1, num_reps + 1)  # X-axis (Repetitions)
-
-    # Left: MAE
-    axes[0].plot(reps, mae_nnn_pearson, "bo-", label="NNN Pearson - MAE")
-    axes[0].plot(reps, mae_nnn_cosine, "go-", label="NNN Cosine - MAE")
-    axes[0].plot(reps, mae_regular_pearson, "ro-", label="Regular Pearson - MAE")
-    axes[0].plot(reps, mae_regular_cosine, "mo-", label="Regular Cosine - MAE")
-    axes[0].set_xlabel("Repetitions")
-    axes[0].set_ylabel("MAE")
-    axes[0].set_title("Random Evaluation - MAE")
-    axes[0].legend()
-
-    # Right: Accuracy
-    axes[1].plot(reps, acc_nnn_pearson, "b--", label="NNN Pearson - Accuracy")
-    axes[1].plot(reps, acc_nnn_cosine, "g--", label="NNN Cosine - Accuracy")
-    axes[1].plot(reps, acc_regular_pearson, "r--", label="Regular Pearson - Accuracy")
-    axes[1].plot(reps, acc_regular_cosine, "m--", label="Regular Cosine - Accuracy")
-    axes[1].set_xlabel("Repetitions")
-    axes[1].set_ylabel("Accuracy")
-    axes[1].set_title("Random Evaluation - Accuracy")
-    axes[1].legend()
-
-    plt.tight_layout()
-    plt.show()
-
-def test_best_models():
-    num_reps = 5  # Number of repetitions for random evaluation
-
-    # Store results for random evaluation (each will have 10 values)
-    mae_nnn_pearson, acc_nnn_pearson = [], []
-    mae_regular_pearson, acc_regular_pearson = [], []
-
-    # --- List Evaluation (Single Run) ---
-    mae_nnn_pearson_list, _, _, _, _, acc_nnn_pearson_list = eval_cf_list("pearson", "list.txt", True, True, k=19)
-    mae_regular_pearson_list, _, _, _, _, acc_regular_pearson_list = eval_cf_list("pearson", "list.txt", False, True)
-
-    # --- Random Evaluation (Looping for 10 Repetitions) ---
-    for _ in range(num_reps):
-        mae_nnn_pearson_val, _, _, _, _, acc_nnn_pearson_val = eval_cf_random("pearson", 10, 1, True, True, k=19)
-        mae_regular_pearson_val, _, _, _, _, acc_regular_pearson_val = eval_cf_random("pearson", 10, 1, False, True)
-
-        mae_nnn_pearson.append(mae_nnn_pearson_val)
-        acc_nnn_pearson.append(acc_nnn_pearson_val)
-        mae_regular_pearson.append(mae_regular_pearson_val)
-        acc_regular_pearson.append(acc_regular_pearson_val)
-
-    # Labels
-    labels = ["Adjusted NNN (Pearson, k=19)", "Adjusted Sum (Pearson)"]
-    x = np.arange(len(labels))
-
-    # --- PLOT 1: List Evaluation (Bar Charts) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    # MAE Bar Chart
-    axes[0].bar(x, [mae_nnn_pearson_list, mae_regular_pearson_list], color=["blue", "green"])
-    axes[0].set_xticks(x)
-    axes[0].set_xticklabels(labels, rotation=45)
-    axes[0].set_ylabel("MAE")
-    axes[0].set_title("List Evaluation - MAE")
-
-    # Accuracy Bar Chart
-    axes[1].bar(x, [acc_nnn_pearson_list, acc_regular_pearson_list], color=["blue", "green"])
-    axes[1].set_xticks(x)
-    axes[1].set_xticklabels(labels, rotation=45)
-    axes[1].set_ylabel("Accuracy")
-    axes[1].set_title("List Evaluation - Accuracy")
-
-    plt.tight_layout()
-    plt.show()
-
-    # --- PLOT 2: Random Evaluation (Side-by-Side Line Graphs) ---
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    reps = np.arange(1, num_reps + 1)  # X-axis (Repetitions)
-
-    # Left: MAE
-    axes[0].plot(reps, mae_nnn_pearson, "bo-", label="Adjusted NNN (Pearson) - MAE")
-    axes[0].plot(reps, mae_regular_pearson, "go-", label="Adjusted Sum (Pearson) - MAE")
-    axes[0].set_xlabel("Repetitions")
-    axes[0].set_ylabel("MAE")
-    axes[0].set_title("Random Evaluation - MAE")
-    axes[0].legend()
-
-    # Right: Accuracy
-    axes[1].plot(reps, acc_nnn_pearson, "b--", label="Adjusted NNN (Pearson) - Accuracy")
-    axes[1].plot(reps, acc_regular_pearson, "g--", label="Adjusted Sum (Pearson) - Accuracy")
+    for i, label in enumerate(labels):
+        axes[1].plot(reps, acc_random[i], linestyle="--", marker="o", label=f"{label} - Accuracy")
     axes[1].set_xlabel("Repetitions")
     axes[1].set_ylabel("Accuracy")
     axes[1].set_title("Random Evaluation - Accuracy")
@@ -290,7 +126,5 @@ def test_best_models():
     plt.show()
 
 if __name__ == "__main__":
-    test_best_n_neighbors()
-    #test_adjusted_vs_regular()
-    #test_pearson_vs_cosine()
-    #test_best_models()
+    #test_best_n_neighbors()
+    test_all_models()
