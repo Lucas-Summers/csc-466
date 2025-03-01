@@ -11,7 +11,7 @@ def eval_nn(n=10, size=100, repeats=3):
     neigbs: list of number of neighbors to evaluate
     '''
     os.makedirs("results", exist_ok=True)
-    mmae, std, prec, rec, f1, acc = cf_random(method="cosine", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
+    mmae, std, prec, rec, f1, acc = cf_random(method="cosine", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=True)
     with open(f"results/cosine_{n}_{size}_{repeats}.txt", "w") as f:
         f.write(f"{n},{mmae},{std},{prec},{rec},{f1},{acc}\n")
     mmae, std, prec, rec, f1, acc = cf_random(method="pearson", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
