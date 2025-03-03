@@ -1,30 +1,22 @@
 from EvaluateCFRandom import eval_cf_random
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+import argparse
+import os
 
-def eval_nn(neigbs=range(1, 100, 25), size=100, repeats=3):
+def eval_nn(n=10, size=100, repeats=3):
     '''
     Evaluate the effect of the number of neighbors on the Mean MAE and Accuracy
     Plots mae and accuracy vs. number of neighbors for both cosine and pearson similarity
     neigbs: list of number of neighbors to evaluate
     '''
-    results = []
-    for n in tqdm(neigbs):
-        mmae, std, prec, rec, f1, acc = eval_cf_random(method="cosine", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
-        results.append((n, mmae, std, prec, rec, f1, acc))
-    plot_results(results, 
-                "Number of Neighbors",
-                "MAE", "Accuracy", "MMAE vs. Number of Neighbors", 
-                f"evals/cos_nn_vs_mmae_acc_{neigbs[-1]}_{size}_{repeats}.png")
-    
-    results = []
-    for n in tqdm(neigbs):
-        mmae, std, prec, rec, f1, acc = eval_cf_random(method="pearson", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
-        results.append((n, mmae, std, prec, rec, f1, acc))
-    plot_results(results, 
-                "Number of Neighbors",
-                "MAE", "Accuracy", "MMAE vs. Number of Neighbors", 
-                f"evals/pear_nn_vs_mmae_acc_{neigbs[-1]}_{size}_{repeats}.png")
+    os.makedirs("results", exist_ok=True)
+    mmae, std, prec, rec, f1, acc = cf_random(method="cosine", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=True)
+    with open(f"results/cosine_{n}_{size}_{repeats}.txt", "w") as f:
+        f.write(f"{n},{mmae},{std},{prec},{rec},{f1},{acc}\n")
+    mmae, std, prec, rec, f1, acc = cf_random(method="pearson", size=size, repeats=repeats, nnn=True, adjusted=False, k=n, verbose=False)
+    with open(f"results/pearson_{n}_{size}_{repeats}.txt", "w") as f:
+        f.write(f"{n},{mmae},{std},{prec},{rec},{f1},{acc}\n")
 
 
 def plot_results(results, x_label, y_label, acc_label, title, filename):
@@ -52,4 +44,10 @@ def plot_results(results, x_label, y_label, acc_label, title, filename):
     # save to im
     plt.savefig(f"{filename}.png")
 
-eval_nn()
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Evaluate a collaborative filtering algorithm")
+    parser.add_argument("neigbs", help="The number of neighbors to evaluate", type=int)
+    parser.add_argument("--size", help="The number of test cases to generate", type=int, default=100)
+    parser.add_argument("--repeats", help="The number of times to repeat the test cases", type=int, default=3)
+    args = parser.parse_args()
+    eval_nn(n=args.neigbs, size=args.size, repeats=args.repeats)
