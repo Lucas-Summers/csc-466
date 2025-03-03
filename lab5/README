@@ -1,0 +1,42 @@
+# 466 Lab 5
+Lucas Summers (lsumme01@calpoly.edu)
+Xiuyuan Qiu (xiqiu@calpoly.edu)
+
+## Requirements
+```
+pandas
+tqdm
+scikit-learn
+matplotlib
+numpy
+```
+If not already installed, run `pip install -r requirements.txt`.
+
+## Programs
+ratings.py: Contains the RatingsMatrix class, which handles loading data into the matrix
+as well as all collaborative filtering techniques implemented. It also contains both functions for the
+pearson and cosine similarity measures.
+
+EvaluateCFRandom.py: Wrapper for the first evaluation method which using random sampling
+to test a given technique.
+
+EvaluateCFList.py: Wrapper for the second evaluation method which tests a given
+technique on the test cases provided in a given file.
+
+experiments.py: Used to test and graph the results all possible models using a 
+combination of both evaluation methods. Also contains the grid search eval
+used to find the best N value for all Nnn techniques.
+
+
+## Example commands (needs `jester-data-1.csv` in `csv/`)
+```
+python EvaluateCFList.py pearson list.txt
+python EvaluateCFRandom pearson 5 5
+```
+
+## Methods Implemented
+1. Weighted sum (use `pearson` or `cosine` for <Method>)
+2. Adjusted weighted sum (use `adjustedpearson` or `adjustedcosine` for <Method>)
+3. Weighted N Nearest Neighbors sum (use `nnnpearson` or `nnncosine` for <Method>)
+4. Adjusted weighted N nearest Neighbors sum (use `nnnadjustedpearson` or `nnnadjustedcosine` for <Method>)
+

@@ -1,4 +1,4 @@
-from EvaluateCFRandom import main as cf_random
+from EvaluateCFRandom import eval_cf_random
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import argparse
