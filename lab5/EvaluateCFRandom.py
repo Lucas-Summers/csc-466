@@ -82,11 +82,25 @@ def eval_cf_random(method, size, repeats, nnn, adjusted, k=5, verbose=True):
 
 if __name__ == "__main__":
     # try `python EvaluateCFRandom pearson 5 5`
-    parser = argparse.ArgumentParser(description="Evaluate a collaborative filtering algorithm")
-    parser.add_argument("method", help="The method to evaluate. Expects 'cosine' or 'pearson'")
+    parser = argparse.ArgumentParser(
+        description="Evaluate a collaborative filtering algorithm using random sampling.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        "method",
+        help=(
+            "The method to evaluate. Choose from:\n"
+            "  - Weighted sum: 'pearson' or 'cosine'\n"
+            "  - Adjusted weighted sum: 'adjustedpearson' or 'adjustedcosine'\n"
+            "  - Weighted N Nearest Neighbors sum: 'nnnpearson' or 'nnncosine'\n"
+            "  - Adjusted weighted N Nearest Neighbors sum: 'nnnadjustedpearson' or 'nnnadjustedcosine'"
+        )
+    )
     parser.add_argument("size", help="The number of test cases to generate", type=int)
     parser.add_argument("repeats", help="The number of times to repeat the test cases", type=int)
     args = parser.parse_args()
+
+    assert "cosine" in args.method or "pearson" in args.method, "Method must have 'cosine' or 'pearson'"
 
     nnn = "nnn" in args.method
     adjusted = "adjusted" in args.method

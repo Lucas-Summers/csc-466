@@ -74,12 +74,23 @@ def eval_cf_list(method, filename, nnn, adjusted, k=5, verbose=True):
 
 if __name__ == "__main__":
     # try `python EvaluateCFList.py pearson list.txt`
-    parser = argparse.ArgumentParser(description="Evaluate a collaborative filtering algorithm")
-    parser.add_argument("method", help="The method to evaluate. Expects 'cosine' or 'pearson'; 'nnn' and/or 'adjusted' as modifiers")
+    parser = argparse.ArgumentParser(
+        description="Evaluate a collaborative filtering algorithm using list-based evaluation.",
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+    parser.add_argument(
+        "method",
+        help=(
+            "The method to evaluate. Choose from:\n"
+            "  - Weighted sum: 'pearson' or 'cosine'\n"
+            "  - Adjusted weighted sum: 'adjustedpearson' or 'adjustedcosine'\n"
+            "  - Weighted N Nearest Neighbors sum: 'nnnpearson' or 'nnncosine'\n"
+            "  - Adjusted weighted N Nearest Neighbors sum: 'nnnadjustedpearson' or 'nnnadjustedcosine'"
+        )
+    )
     parser.add_argument("filename", help="The filename of the test cases, expects UserID, ItemID")
     args = parser.parse_args()
 
-    # TODO: change to ids instead of names
     assert "cosine" in args.method or "pearson" in args.method, "Method must have 'cosine' or 'pearson'"
 
     nnn = "nnn" in args.method
