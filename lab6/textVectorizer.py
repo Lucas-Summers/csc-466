@@ -23,6 +23,15 @@ class textVectorizer:
         self.vocab = None
 
     def preprocess_text(self, text):
+        '''
+        Preprocess the given text document by:
+            - Removing punctuation.
+            - Converting text to lowercase.
+            - Removing stopwords (if specified).
+            - Applying stemming (if specified)
+
+        Returns a list of each word in the document
+        '''
         words = text.translate(str.maketrans('', '', string.punctuation)).lower().split()
         #words = re.sub(r'[^\w\s]', '', text.lower())
         words = [word for word in words if word not in self.stopwords]
@@ -32,6 +41,13 @@ class textVectorizer:
         return words
 
     def load_documents(self):
+        '''
+        Load documents from the directory, preprocess them, and build the ground truth (filename -> author)
+        
+        Returns:
+            documents: A dict mapping each document filename to its preprocessed text.
+            ground_truth: A list of tuples, where each tuple contains a document filename and its author.
+        '''
         documents = {}
         ground_truth = []
         for split in ['C50train', 'C50test']:
@@ -49,7 +65,13 @@ class textVectorizer:
         return documents, ground_truth
 
     def compute_tfidf(self, min_df=5, max_df=0.8):
-        """Compute the TF-IDF matrix with vectorized operations."""
+        '''
+        Compute the TF-IDF matrix for the loaded documents
+        
+        Args:
+            min_df (int): The minimum document frequency required for a term to be included.
+            max_df (float): The maximum document frequency proportion allowed for a term to be included.
+        '''
         term_doc_freq = defaultdict(int)
         doc_term_counts = defaultdict(Counter)
 
@@ -88,7 +110,10 @@ class textVectorizer:
 
     # Save TF-IDF matrix and ground truth
     def save_output(self, output_file, ground_truth_file):
-        np.save(output_file, self.tfidf_matrix)  # Save TF-IDF as a NumPy array
+        '''
+        Save the computed TF-IDF matrix (numpy array) and the ground truth csv
+        '''
+        np.save(output_file, self.tfidf_matrix)
         
         with open(ground_truth_file, 'w', newline='') as f:
             writer = csv.writer(f)

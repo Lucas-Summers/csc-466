@@ -1,0 +1,24 @@
+# 466 Lab 6
+Lucas Summers (lsumme01@calpoly.edu)
+Xiuyuan Qiu (xiqiu@calpoly.edu)
+
+## Requirements
+```
+scikit-learn
+numpy
+nltk
+```
+If not already installed, run `pip install -r requirements.txt`.
+
+## Authorship Attribution Through Classification (needs data in `C50/`)
+```
+python textVectorizer.py C50/ matrix.npy ground_truth.csv [--stemming] [--stopwords]
+
+```
+
+## Authorship Attribution Through Clustering (needs data in `C50/`)
+```
+python textVectorizer.py C50/ matrix.npy ground_truth.csv [--stemming] [--stopwords]
+python KMeansAuthorship.py matrix.npy kmeans.out 5 [--n_init (int)] [--max_iter (int)]
+python clusteringEvaluation.py kmeans.out ground_truth.csv
+```
