@@ -1,3 +1,5 @@
 scikit-learn
 numpy
 nltk
+tqdm
+matplotlib
