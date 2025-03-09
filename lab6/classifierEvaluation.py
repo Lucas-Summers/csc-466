@@ -41,6 +41,17 @@ if __name__ == "__main__":
         print(f"\tF1 Score: {f1}")
         print()
 
+    print("top 5 authors by f1 score")
+    sorted_authors = sorted(authors, key=lambda x: hits[x] / (hits[x] + strikes[x] + misses[x]), reverse=True)
+    for author in sorted_authors[:5]:
+        print(f"Author: {author}")
+        print(f"precision, recall, f1: {hits[author] / (hits[author] + strikes[author]):.2f}, {hits[author] / (hits[author] + misses[author]):.2f}, {2 * hits[author] / (hits[author] + strikes[author]) * hits[author] / (hits[author] + misses[author]) / (hits[author] / (hits[author] + strikes[author]) + hits[author] / (hits[author] + misses[author])):.2f}") 
+    print("bottom 5 authors by f1 score")
+    for author in sorted_authors[-5:]:
+        print(f"Author: {author}")
+        print(f"precision, recall, f1: {hits[author] / (hits[author] + strikes[author]):.2f}, {hits[author] / (hits[author] + misses[author]):.2f}, {2 * hits[author] / (hits[author] + strikes[author]) * hits[author] / (hits[author] + misses[author]) / (hits[author] / (hits[author] + strikes[author]) + hits[author] / (hits[author] + misses[author])):.2f}")
+
+
     print("== Overall Metrics ==")
     correct = sum(hits.values())
     total = len(gt_labels)

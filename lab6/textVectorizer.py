@@ -9,6 +9,7 @@ import nltk
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 import re
+from tqdm import tqdm
 
 nltk.download('punkt')  # Ensure tokenization tools are available
 nltk.download('stopwords')  # Ensure stopwords are available
@@ -21,6 +22,10 @@ class textVectorizer:
         self.documents, self.ground_truth = self.load_documents()
         self.tfidf_matrix = None
         self.vocab = None
+
+        self.okapi_lookup = None
+        self.doc_term_counts = None
+        self.term_doc_freq = None
 
     def preprocess_text(self, text):
         '''
@@ -64,6 +69,31 @@ class textVectorizer:
                             ground_truth.append((filename, author))
         return documents, ground_truth
 
+    def compute_okapi_lookup(self, k1=1.5, b=0.75, k2=100):
+        '''
+        Compute the Okapi lookup table for all documents
+        Expected use: self.okapi_lookup[doc1_idx][doc2_idx] -> Okapi similarity between doc1 and doc2
+        '''
+        num_docs = len(self.documents)
+        doc_lengths = {doc: len(terms) for doc, terms in self.documents.items()}
+        avg_doc_length = sum(doc_lengths.values()) / num_docs
+        self.okapi_lookup = np.zeros((num_docs, num_docs), dtype=np.float32)
+        pbar = tqdm(range(num_docs))
+        for d1_idx, (doc1, doc1_terms) in enumerate(self.doc_term_counts.items()):
+            for d2_idx, (doc2, doc2_terms) in enumerate(self.doc_term_counts.items()):
+                similarity = 0
+                for term, term_count in doc1_terms.items():
+                    if term in doc2_terms:
+                        df = self.term_doc_freq[term] / num_docs
+                        idf = np.log((num_docs - df + 0.5) / (df + 0.5))
+                        doc1_score = idf * ((k1 + 1) * term_count) / (k1 * (1 - b + (b * doc_lengths[doc1]) / avg_doc_length) + term_count)
+                        doc1_score *= ((k2 + 1) * doc2_terms[term]) / (k2 + doc2_terms[term])
+                        similarity += doc1_score
+                        if similarity == np.nan:
+                            print("nan")
+                self.okapi_lookup[d1_idx][d2_idx] = similarity
+            pbar.update(1)                
+
     def compute_tfidf(self, min_df=5, max_df=0.8):
         '''
         Compute the TF-IDF matrix for the loaded documents
@@ -80,6 +110,7 @@ class textVectorizer:
             term_counts = doc_term_counts[doc]
             for term in words:
                 term_counts[term] += 1
+            for term in set(words):
                 term_doc_freq[term] += 1
 
         num_docs = len(self.documents)
@@ -87,6 +118,7 @@ class textVectorizer:
         # Filter vocabulary based on df thresholds
         vocab = {term for term, df in term_doc_freq.items() if df >= min_df and df / num_docs <= max_df}
         vocab = sorted(vocab)  # Sorted for consistency
+        self.vocab = vocab
         vocab_index = {term: idx for idx, term in enumerate(vocab)}
 
         # Precompute the IDF for all terms in the vocabulary
@@ -104,11 +136,13 @@ class textVectorizer:
                 if term in vocab_index:
                     term_idx = vocab_index[term]
                     term_matrix[doc_idx, term_idx] = count / total_terms  # Compute TF
+        self.doc_term_counts = doc_term_counts
+        self.term_doc_freq = term_doc_freq
 
         # Compute the final TF-IDF matrix (TF * IDF)
         self.tfidf_matrix = term_matrix * idf  # Vectorized multiplication of TF and IDF
 
-    # Save TF-IDF matrix and ground truth
+    # Save TF-IDF matrix, ground truth, okapi tables
     def save_output(self, output_file, ground_truth_file):
         '''
         Save the computed TF-IDF matrix (numpy array) and the ground truth csv
@@ -119,7 +153,10 @@ class textVectorizer:
             writer = csv.writer(f)
             writer.writerow(['Filename', 'Author'])
             writer.writerows(self.ground_truth)
-        
+
+
+        np.save("okapi_lookup.npy", self.okapi_lookup)
+
         print(f"Saved TF-IDF matrix to {output_file} and ground truth to {ground_truth_file}")
 
 
@@ -144,6 +181,10 @@ if __name__ == "__main__":
     tv.compute_tfidf()
     print(f"Generated TF-IDF matrix.")
     
+    print("Computing Okapi tables...")
+    tv.compute_okapi_lookup()
+    print(f"Generated Okapi tables.")
+
     print("Saving outputs...")
     tv.save_output(args.output_file, args.ground_truth_file)
     print("Processing complete.")

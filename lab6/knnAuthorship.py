@@ -3,40 +3,26 @@ import argparse
 from sklearn.neighbors import KNeighborsClassifier
 import csv
 from tqdm import tqdm
+import time
 
-def okapi_function(all_docs):
+def okapi_function(okapi_table, tfidfs):
     '''
     Takes all the documents in the dataset 
     and returns the okapi similarity function that can 
     be used to calculate the similarity between two documents
     '''
-    # Calculate the average document length
-    avg_doc_length = np.mean([len(doc) for doc in all_docs])
-
-    def okapi(doc1, doc2):
+    doc_idx_lookup = {doc.tobytes(): idx for idx, doc in enumerate(tfidfs)}
+    def okapi_dist(doc1_tfidfs, doc2_tfidfs):
         '''
         Takes two documents and returns the okapi BM25 similarity between them
         '''
-        # Calculate the term frequency of each word in the documents
-        doc1_tf = {word: doc1.count(word) for word in doc1}
-        doc2_tf = {word: doc2.count(word) for word in doc2}
+        doc1_idx = doc_idx_lookup[doc1_tfidfs.tobytes()]
+        doc2_idx = doc_idx_lookup[doc2_tfidfs.tobytes()]
 
-        # Calculate the document frequency of each word in the documents
-        doc1_df = {word: sum([1 for doc in all_docs if word in doc]) for word in doc1} 
-        doc2_df = {word: sum([1 for doc in all_docs if word in doc]) for word in doc2}
+        similarity = okapi_table[doc1_idx][doc2_idx]
 
-        # Calculate the similarity between the two documents
-        similarity = 0
-        for term in set(doc1 + doc2):
-            k_1, b, k_2 = 1.5, 0.75, 100
-            idf = np.log((len(all_docs) - doc1_df[term] + 0.5) / (doc1_df[term] + 0.5))
-            doc1_score = idf * ((k_1 + 1) * doc1_tf[term]) / (k_1 * (1 - b + b * len(doc1) / avg_doc_length) + doc1_tf[term])
-            doc1_score *= ((k_2 + 1) * doc2_tf[term]) / (k_2 + doc2_tf[term])
-
-            similarity += doc1_score
-        return similarity
-
-    return okapi
+        return 1 - similarity
+    return okapi_dist
             
 if __name__ == "__main__":
     # try it with `python knnAuthorship.py matrix.npy knn5.out 5`
@@ -57,12 +43,12 @@ if __name__ == "__main__":
     # Create the similarity function
     similarities = {
         'cosine': 'cosine',
-        'okapi': okapi_function(documents)
+        'okapi': okapi_function(np.load("okapi_lookup.npy"), documents)
     }
-
+    
     # Perform all-but-one K-Means clustering
     cluster_labels = []
-    kmeans = KNeighborsClassifier(n_neighbors=5)
+    kmeans = KNeighborsClassifier(n_neighbors=args.n, metric=similarities[args.similarity])
     num_docs = len(documents)
     pbar = tqdm(range(num_docs))
     correct = 0
