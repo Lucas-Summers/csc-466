@@ -16,7 +16,7 @@ If not already installed, run `pip install -r requirements.txt`.
 ## Authorship Attribution Through Classification (needs data in `C50/`)
 ```
 python textVectorizer.py C50/ matrix.npy ground_truth.csv [--stemming] [--stopwords]
-python knnAuthorship.py matrix.npy knn5.out 5
+python knnAuthorship.py matrix.npy knn5.out 5 cosine
 python classifierEvaluation.py knn5.out ground_truth.csv
 
 ```

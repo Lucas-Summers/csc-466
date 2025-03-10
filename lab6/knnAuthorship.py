@@ -25,7 +25,7 @@ def okapi_function(okapi_table, tfidfs):
     return okapi_dist
             
 if __name__ == "__main__":
-    # try it with `python knnAuthorship.py matrix.npy knn5.out 5`
+    # try it with `python knnAuthorship.py matrix.npy knn5.out 5 cosine`
     parser = argparse.ArgumentParser(description="K-Means Clustering for Authorship Attribution")
     parser.add_argument('input_file', type=str, help="Path to the file with vectorized document representations")
     parser.add_argument('output_file', type=str, help="Path to save the clustering output (cluster labels)")
