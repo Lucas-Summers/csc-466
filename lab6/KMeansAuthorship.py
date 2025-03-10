@@ -3,7 +3,7 @@ import argparse
 from sklearn.cluster import KMeans
 
 if __name__ == "__main__":
-    # try it with `python KMeansAuthorship.py matrix.npy kmeans.out 5`
+    # try it with `python KMeansAuthorship.py matrix.npy kmeans.out 50`
     parser = argparse.ArgumentParser(description="K-Means Clustering for Authorship Attribution")
     parser.add_argument('input_file', type=str, help="Path to the file with vectorized document representations")
     parser.add_argument('output_file', type=str, help="Path to save the clustering output (cluster labels)")

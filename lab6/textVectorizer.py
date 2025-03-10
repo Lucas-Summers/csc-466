@@ -2,13 +2,11 @@ import os
 import numpy as np
 import argparse
 from collections import defaultdict, Counter
-import math
 import csv
 import string
 import nltk
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
-import re
 from tqdm import tqdm
 
 nltk.download('punkt')  # Ensure tokenization tools are available
@@ -38,7 +36,6 @@ class textVectorizer:
         Returns a list of each word in the document
         '''
         words = text.translate(str.maketrans('', '', string.punctuation)).lower().split()
-        #words = re.sub(r'[^\w\s]', '', text.lower())
         words = [word for word in words if word not in self.stopwords]
 
         if self.stemmer:

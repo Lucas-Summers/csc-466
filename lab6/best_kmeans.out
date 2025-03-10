@@ -1,0 +1,507 @@
+== Cluster Metrics ==
+Cluster 0:
+  Size: 76
+  Plurality Label: LynneO'Donnell
+  Purity: 72.37%
+  Author Distribution: {'GrahamEarnshaw': 2, 'HeatherScoffield': 1, "LynneO'Donnell": 55, 'LynnleyBrowning': 13, 'MarkBendeich': 2, 'PatriciaCommins': 1, 'MureDickie': 1, 'ScottHillis': 1}
+Cluster 1:
+  Size: 69
+  Plurality Label: DavidLawder
+  Purity: 65.22%
+  Author Distribution: {'DavidLawder': 45, 'ToddNissen': 24}
+Cluster 2:
+  Size: 19
+  Plurality Label: JoWinterbottom
+  Purity: 78.95%
+  Author Distribution: {'JoWinterbottom': 15, 'KirstinRidley': 2, 'PierreTran': 2}
+Cluster 3:
+  Size: 61
+  Plurality Label: MartinWolk
+  Purity: 50.82%
+  Author Distribution: {'EricAuchard': 1, 'KouroshKarimkhany': 7, 'MartinWolk': 31, 'SamuelPerry': 14, 'TheresePoletti': 6, 'MureDickie': 1, 'WilliamKazer': 1}
+Cluster 4:
+  Size: 18
+  Plurality Label: SimonCowell
+  Purity: 66.67%
+  Author Distribution: {'SimonCowell': 12, 'JoeOrtiz': 6}
+Cluster 5:
+  Size: 158
+  Plurality Label: PeterHumphrey
+  Purity: 47.47%
+  Author Distribution: {'JaneMacartney': 1, "LynneO'Donnell": 1, 'MureDickie': 6, 'PeterHumphrey': 75, 'SarahDavison': 14, 'ScottHillis': 7, 'TanEeLyn': 48, 'BenjaminKangLim': 3, 'WilliamKazer': 3}
+Cluster 6:
+  Size: 10
+  Plurality Label: EricAuchard
+  Purity: 40.00%
+  Author Distribution: {'BradDorfman': 2, 'EricAuchard': 4, 'TheresePoletti': 4}
+Cluster 7:
+  Size: 3
+  Plurality Label: MichaelConnor
+  Purity: 100.00%
+  Author Distribution: {'MichaelConnor': 3}
+Cluster 8:
+  Size: 402
+  Plurality Label: KarlPenhaul
+  Purity: 17.91%
+  Author Distribution: {'BenjaminKangLim': 56, 'GrahamEarnshaw': 8, 'JaneMacartney': 61, 'KarlPenhaul': 72, "LynneO'Donnell": 7, 'MatthewBunce': 2, 'MureDickie': 46, 'PeterHumphrey': 15, 'SarahDavison': 9, 'ScottHillis': 59, 'TanEeLyn': 15, 'WilliamKazer': 43, 'HeatherScoffield': 2, 'JohnMastrini': 2, 'MarkBendeich': 2, 'RogerFillion': 3}
+Cluster 9:
+  Size: 33
+  Plurality Label: SimonCowell
+  Purity: 63.64%
+  Author Distribution: {'AlexanderSmith': 5, 'JoeOrtiz': 6, 'SimonCowell': 21, 'TimFarrand': 1}
+Cluster 10:
+  Size: 94
+  Plurality Label: HeatherScoffield
+  Purity: 52.13%
+  Author Distribution: {'BernardHickey': 1, 'HeatherScoffield': 49, 'KevinMorrison': 4, 'LydiaZajc': 4, 'DarrenSchuettler': 36}
+Cluster 11:
+  Size: 12
+  Plurality Label: NickLouth
+  Purity: 91.67%
+  Author Distribution: {'EricAuchard': 1, 'NickLouth': 11}
+Cluster 12:
+  Size: 2
+  Plurality Label: LydiaZajc
+  Purity: 100.00%
+  Author Distribution: {'LydiaZajc': 2}
+Cluster 13:
+  Size: 35
+  Plurality Label: RobinSidel
+  Purity: 100.00%
+  Author Distribution: {'RobinSidel': 35}
+Cluster 14:
+  Size: 3
+  Plurality Label: KarlPenhaul
+  Purity: 100.00%
+  Author Distribution: {'KarlPenhaul': 3}
+Cluster 15:
+  Size: 39
+  Plurality Label: BenjaminKangLim
+  Purity: 28.21%
+  Author Distribution: {'BenjaminKangLim': 11, 'JaneMacartney': 8, 'JohnMastrini': 2, 'MureDickie': 3, 'PeterHumphrey': 3, 'ScottHillis': 2, 'TanEeLyn': 5, 'GrahamEarnshaw': 1, 'KarlPenhaul': 4}
+Cluster 16:
+  Size: 11
+  Plurality Label: RobinSidel
+  Purity: 100.00%
+  Author Distribution: {'RobinSidel': 11}
+Cluster 17:
+  Size: 163
+  Plurality Label: RogerFillion
+  Purity: 42.94%
+  Author Distribution: {'AaronPressman': 4, 'AlexanderSmith': 5, 'EricAuchard': 12, 'JoWinterbottom': 1, 'KirstinRidley': 11, 'MichaelConnor': 1, 'NickLouth': 57, 'RogerFillion': 70, 'TheresePoletti': 2}
+Cluster 18:
+  Size: 49
+  Plurality Label: KouroshKarimkhany
+  Purity: 91.84%
+  Author Distribution: {'EricAuchard': 1, 'KouroshKarimkhany': 45, 'MartinWolk': 1, 'SamuelPerry': 2}
+Cluster 19:
+  Size: 79
+  Plurality Label: MatthewBunce
+  Purity: 100.00%
+  Author Distribution: {'MatthewBunce': 79}
+Cluster 20:
+  Size: 5
+  Plurality Label: JanLopatka
+  Purity: 100.00%
+  Author Distribution: {'JanLopatka': 5}
+Cluster 21:
+  Size: 59
+  Plurality Label: MartinWolk
+  Purity: 49.15%
+  Author Distribution: {'BradDorfman': 2, 'KevinDrawbaugh': 2, 'MartinWolk': 29, 'PatriciaCommins': 1, 'PierreTran': 24, 'WilliamKazer': 1}
+Cluster 22:
+  Size: 17
+  Plurality Label: LynneO'Donnell
+  Purity: 76.47%
+  Author Distribution: {"LynneO'Donnell": 13, 'WilliamKazer': 3, 'BenjaminKangLim': 1}
+Cluster 23:
+  Size: 16
+  Plurality Label: PatriciaCommins
+  Purity: 100.00%
+  Author Distribution: {'PatriciaCommins': 16}
+Cluster 24:
+  Size: 28
+  Plurality Label: AaronPressman
+  Purity: 85.71%
+  Author Distribution: {'AaronPressman': 24, 'SamuelPerry': 2, 'KirstinRidley': 1, 'RogerFillion': 1}
+Cluster 25:
+  Size: 9
+  Plurality Label: EdnaFernandes
+  Purity: 66.67%
+  Author Distribution: {'EdnaFernandes': 6, 'JonathanBirt': 1, 'TimFarrand': 2}
+Cluster 26:
+  Size: 116
+  Plurality Label: SamuelPerry
+  Purity: 34.48%
+  Author Distribution: {'EricAuchard': 19, 'KevinDrawbaugh': 1, 'KevinMorrison': 1, 'KirstinRidley': 1, 'KouroshKarimkhany': 24, 'MartinWolk': 5, 'RogerFillion': 1, 'SamuelPerry': 40, 'TheresePoletti': 23, 'MarcelMichelson': 1}
+Cluster 27:
+  Size: 5
+  Plurality Label: HeatherScoffield
+  Purity: 100.00%
+  Author Distribution: {'HeatherScoffield': 5}
+Cluster 28:
+  Size: 82
+  Plurality Label: KirstinRidley
+  Purity: 43.90%
+  Author Distribution: {'BernardHickey': 2, 'JoWinterbottom': 2, 'KeithWeir': 7, 'KirstinRidley': 36, 'MarcelMichelson': 11, 'NickLouth': 18, 'PierreTran': 1, 'EricAuchard': 4, 'KouroshKarimkhany': 1}
+Cluster 29:
+  Size: 2438
+  Plurality Label: BernardHickey
+  Purity: 3.98%
+  Author Distribution: {'AaronPressman': 69, 'AlanCrosby': 33, 'AlexanderSmith': 85, 'BenjaminKangLim': 15, 'BernardHickey': 97, 'BradDorfman': 93, 'DarrenSchuettler': 9, 'DavidLawder': 19, 'EdnaFernandes': 84, 'EricAuchard': 53, 'FumikoFujisaki': 74, 'GrahamEarnshaw': 88, 'HeatherScoffield': 23, 'JaneMacartney': 22, 'JanLopatka': 5, 'JimGilchrist': 3, 'JoeOrtiz': 83, 'JohnMastrini': 5, 'JonathanBirt': 90, 'JoWinterbottom': 41, 'KarlPenhaul': 21, 'KeithWeir': 93, 'KevinDrawbaugh': 95, 'KevinMorrison': 81, 'KirstinRidley': 46, 'KouroshKarimkhany': 23, 'LydiaZajc': 9, "LynneO'Donnell": 23, 'LynnleyBrowning': 87, 'MarcelMichelson': 43, 'MarkBendeich': 96, 'MartinWolk': 34, 'MatthewBunce': 19, 'MichaelConnor': 90, 'MureDickie': 34, 'NickLouth': 14, 'PatriciaCommins': 82, 'PeterHumphrey': 6, 'PierreTran': 44, 'RobinSidel': 49, 'RogerFillion': 25, 'SamuelPerry': 42, 'SarahDavison': 75, 'ScottHillis': 15, 'SimonCowell': 67, 'TanEeLyn': 31, 'TheresePoletti': 31, 'TimFarrand': 97, 'ToddNissen': 27, 'WilliamKazer': 48}
+Cluster 30:
+  Size: 38
+  Plurality Label: JohnMastrini
+  Purity: 42.11%
+  Author Distribution: {'AlanCrosby': 11, 'JanLopatka': 11, 'JohnMastrini': 16}
+Cluster 31:
+  Size: 56
+  Plurality Label: MarcelMichelson
+  Purity: 58.93%
+  Author Distribution: {'MarcelMichelson': 33, 'PierreTran': 23}
+Cluster 32:
+  Size: 4
+  Plurality Label: AaronPressman
+  Purity: 75.00%
+  Author Distribution: {'EricAuchard': 1, 'AaronPressman': 3}
+Cluster 33:
+  Size: 23
+  Plurality Label: BenjaminKangLim
+  Purity: 43.48%
+  Author Distribution: {'BenjaminKangLim': 10, 'JaneMacartney': 3, 'MureDickie': 7, 'ScottHillis': 3}
+Cluster 34:
+  Size: 96
+  Plurality Label: ToddNissen
+  Purity: 47.92%
+  Author Distribution: {'BradDorfman': 3, 'DavidLawder': 35, 'EdnaFernandes': 1, 'KevinDrawbaugh': 2, 'MichaelConnor': 6, 'RobinSidel': 2, 'ToddNissen': 46, "LynneO'Donnell": 1}
+Cluster 35:
+  Size: 8
+  Plurality Label: KevinMorrison
+  Purity: 100.00%
+  Author Distribution: {'KevinMorrison': 8}
+Cluster 36:
+  Size: 204
+  Plurality Label: JanLopatka
+  Purity: 38.73%
+  Author Distribution: {'AlanCrosby': 56, 'JanLopatka': 79, 'JohnMastrini': 69}
+Cluster 37:
+  Size: 3
+  Plurality Label: RobinSidel
+  Purity: 100.00%
+  Author Distribution: {'RobinSidel': 3}
+Cluster 38:
+  Size: 38
+  Plurality Label: TheresePoletti
+  Purity: 89.47%
+  Author Distribution: {'TheresePoletti': 34, 'EricAuchard': 4}
+Cluster 39:
+  Size: 6
+  Plurality Label: JohnMastrini
+  Purity: 100.00%
+  Author Distribution: {'JohnMastrini': 6}
+Cluster 40:
+  Size: 6
+  Plurality Label: JonathanBirt
+  Purity: 100.00%
+  Author Distribution: {'JonathanBirt': 6}
+Cluster 41:
+  Size: 7
+  Plurality Label: EdnaFernandes
+  Purity: 85.71%
+  Author Distribution: {'DavidLawder': 1, 'EdnaFernandes': 6}
+Cluster 42:
+  Size: 3
+  Plurality Label: ToddNissen
+  Purity: 100.00%
+  Author Distribution: {'ToddNissen': 3}
+Cluster 43:
+  Size: 167
+  Plurality Label: LydiaZajc
+  Purity: 50.90%
+  Author Distribution: {'AlexanderSmith': 3, 'DarrenSchuettler': 55, 'HeatherScoffield': 20, 'JoeOrtiz': 4, 'LydiaZajc': 85}
+Cluster 44:
+  Size: 26
+  Plurality Label: FumikoFujisaki
+  Purity: 100.00%
+  Author Distribution: {'FumikoFujisaki': 26}
+Cluster 45:
+  Size: 1
+  Plurality Label: MureDickie
+  Purity: 100.00%
+  Author Distribution: {'MureDickie': 1}
+Cluster 46:
+  Size: 24
+  Plurality Label: ScottHillis
+  Purity: 54.17%
+  Author Distribution: {'MureDickie': 1, 'BenjaminKangLim': 4, 'JaneMacartney': 5, 'ScottHillis': 13, 'WilliamKazer': 1}
+Cluster 47:
+  Size: 6
+  Plurality Label: KevinMorrison
+  Purity: 100.00%
+  Author Distribution: {'KevinMorrison': 6}
+Cluster 48:
+  Size: 53
+  Plurality Label: JoWinterbottom
+  Purity: 77.36%
+  Author Distribution: {'AlexanderSmith': 2, 'JonathanBirt': 3, 'JoWinterbottom': 41, 'KirstinRidley': 3, 'EdnaFernandes': 3, 'JoeOrtiz': 1}
+Cluster 49:
+  Size: 120
+  Plurality Label: JimGilchrist
+  Purity: 80.83%
+  Author Distribution: {'JimGilchrist': 97, 'MarcelMichelson': 12, 'PierreTran': 6, 'TanEeLyn': 1, 'GrahamEarnshaw': 1, 'PeterHumphrey': 1, 'SarahDavison': 2}
+
+== Summary ==
+Average Cluster Purity: 0.72
+Rand Score: 0.75
+
+== Author Metrics ==
+Author GrahamEarnshaw:
+  Clusters with author: 5
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author HeatherScoffield:
+  Clusters with author: 6
+  Clusters with author as plurality: 2
+  Recall: 33.33%
+  Precision: 100.00%
+Author LynneO'Donnell:
+  Clusters with author: 6
+  Clusters with author as plurality: 2
+  Recall: 33.33%
+  Precision: 100.00%
+Author LynnleyBrowning:
+  Clusters with author: 2
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author MarkBendeich:
+  Clusters with author: 3
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author PatriciaCommins:
+  Clusters with author: 4
+  Clusters with author as plurality: 1
+  Recall: 25.00%
+  Precision: 100.00%
+Author MureDickie:
+  Clusters with author: 9
+  Clusters with author as plurality: 1
+  Recall: 11.11%
+  Precision: 100.00%
+Author ScottHillis:
+  Clusters with author: 7
+  Clusters with author as plurality: 1
+  Recall: 14.29%
+  Precision: 100.00%
+Author DavidLawder:
+  Clusters with author: 4
+  Clusters with author as plurality: 1
+  Recall: 25.00%
+  Precision: 100.00%
+Author ToddNissen:
+  Clusters with author: 4
+  Clusters with author as plurality: 2
+  Recall: 50.00%
+  Precision: 100.00%
+Author JoWinterbottom:
+  Clusters with author: 5
+  Clusters with author as plurality: 2
+  Recall: 40.00%
+  Precision: 100.00%
+Author KirstinRidley:
+  Clusters with author: 7
+  Clusters with author as plurality: 1
+  Recall: 14.29%
+  Precision: 100.00%
+Author PierreTran:
+  Clusters with author: 6
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author EricAuchard:
+  Clusters with author: 10
+  Clusters with author as plurality: 1
+  Recall: 10.00%
+  Precision: 100.00%
+Author KouroshKarimkhany:
+  Clusters with author: 5
+  Clusters with author as plurality: 1
+  Recall: 20.00%
+  Precision: 100.00%
+Author MartinWolk:
+  Clusters with author: 5
+  Clusters with author as plurality: 2
+  Recall: 40.00%
+  Precision: 100.00%
+Author SamuelPerry:
+  Clusters with author: 5
+  Clusters with author as plurality: 1
+  Recall: 20.00%
+  Precision: 100.00%
+Author TheresePoletti:
+  Clusters with author: 6
+  Clusters with author as plurality: 1
+  Recall: 16.67%
+  Precision: 100.00%
+Author WilliamKazer:
+  Clusters with author: 7
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author SimonCowell:
+  Clusters with author: 3
+  Clusters with author as plurality: 2
+  Recall: 66.67%
+  Precision: 100.00%
+Author JoeOrtiz:
+  Clusters with author: 5
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author JaneMacartney:
+  Clusters with author: 6
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author PeterHumphrey:
+  Clusters with author: 5
+  Clusters with author as plurality: 1
+  Recall: 20.00%
+  Precision: 100.00%
+Author SarahDavison:
+  Clusters with author: 4
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author TanEeLyn:
+  Clusters with author: 5
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author BenjaminKangLim:
+  Clusters with author: 7
+  Clusters with author as plurality: 2
+  Recall: 28.57%
+  Precision: 100.00%
+Author BradDorfman:
+  Clusters with author: 4
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author MichaelConnor:
+  Clusters with author: 4
+  Clusters with author as plurality: 1
+  Recall: 25.00%
+  Precision: 100.00%
+Author KarlPenhaul:
+  Clusters with author: 4
+  Clusters with author as plurality: 2
+  Recall: 50.00%
+  Precision: 100.00%
+Author MatthewBunce:
+  Clusters with author: 3
+  Clusters with author as plurality: 1
+  Recall: 33.33%
+  Precision: 100.00%
+Author JohnMastrini:
+  Clusters with author: 6
+  Clusters with author as plurality: 2
+  Recall: 33.33%
+  Precision: 100.00%
+Author RogerFillion:
+  Clusters with author: 5
+  Clusters with author as plurality: 1
+  Recall: 20.00%
+  Precision: 100.00%
+Author AlexanderSmith:
+  Clusters with author: 5
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author TimFarrand:
+  Clusters with author: 3
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author BernardHickey:
+  Clusters with author: 3
+  Clusters with author as plurality: 1
+  Recall: 33.33%
+  Precision: 100.00%
+Author KevinMorrison:
+  Clusters with author: 5
+  Clusters with author as plurality: 2
+  Recall: 40.00%
+  Precision: 100.00%
+Author LydiaZajc:
+  Clusters with author: 4
+  Clusters with author as plurality: 2
+  Recall: 50.00%
+  Precision: 100.00%
+Author DarrenSchuettler:
+  Clusters with author: 3
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author NickLouth:
+  Clusters with author: 4
+  Clusters with author as plurality: 1
+  Recall: 25.00%
+  Precision: 100.00%
+Author RobinSidel:
+  Clusters with author: 5
+  Clusters with author as plurality: 3
+  Recall: 60.00%
+  Precision: 100.00%
+Author AaronPressman:
+  Clusters with author: 4
+  Clusters with author as plurality: 2
+  Recall: 50.00%
+  Precision: 100.00%
+Author JanLopatka:
+  Clusters with author: 4
+  Clusters with author as plurality: 2
+  Recall: 50.00%
+  Precision: 100.00%
+Author KevinDrawbaugh:
+  Clusters with author: 4
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author EdnaFernandes:
+  Clusters with author: 5
+  Clusters with author as plurality: 2
+  Recall: 40.00%
+  Precision: 100.00%
+Author JonathanBirt:
+  Clusters with author: 4
+  Clusters with author as plurality: 1
+  Recall: 25.00%
+  Precision: 100.00%
+Author MarcelMichelson:
+  Clusters with author: 5
+  Clusters with author as plurality: 1
+  Recall: 20.00%
+  Precision: 100.00%
+Author KeithWeir:
+  Clusters with author: 2
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author AlanCrosby:
+  Clusters with author: 3
+  Clusters with author as plurality: 0
+  Recall: 0.00%
+  Precision: 0.00%
+Author FumikoFujisaki:
+  Clusters with author: 2
+  Clusters with author as plurality: 1
+  Recall: 50.00%
+  Precision: 100.00%
+Author JimGilchrist:
+  Clusters with author: 2
+  Clusters with author as plurality: 1
+  Recall: 50.00%
+  Precision: 100.00%

@@ -4,6 +4,8 @@ from sklearn.metrics import rand_score
 from collections import Counter
 import csv
 from collections import defaultdict
+import matplotlib.pyplot as plt
+import pandas as pd
 
 def load_ground_truth(ground_truth_file):
     '''
@@ -44,7 +46,7 @@ def evaluate_clusters(cluster_labels, ground_truth, k):
 def evaluate_authors(cluster_info, cluster_labels, ground_truth, k):
     '''
     Evaluate each author to get total clusters they are in, total clusters they are plurality,
-    precision score, and recall score
+    precision score, recall score, and F1-score.
     '''
     author_clusters = defaultdict(set)
     # Populate the author_clusters dictionary where key = author, value = set of clusters this author appears in
@@ -58,17 +60,86 @@ def evaluate_authors(cluster_info, cluster_labels, ground_truth, k):
     for author, clusters in author_clusters.items():
         total_clusters = len(clusters)  # The number of clusters the author has appeared in
         plurality_clusters = sum(1 for cluster_id in clusters if cluster_info[cluster_id]['plurality_label'] == author)
-        recall = plurality_clusters / total_clusters if total_clusters > 0 else 0
-        precision = plurality_clusters / total_clusters if total_clusters > 0 else 0
+
+        # Compute total articles written by the author
+        total_articles = sum(cluster_info[c]['author_distribution'].get(author, 0) for c in cluster_info)
+
+        # Count articles written by the author in clusters where they are the plurality
+        num_articles_in_plurality_clusters = sum(
+            cluster_info[c]['author_distribution'].get(author, 0)
+            for c in cluster_info if cluster_info[c]['plurality_label'] == author
+        )
+
+        # Total number of articles in clusters where this author is the plurality
+        total_articles_in_plurality_clusters = sum(
+            cluster_info[c]['size'] for c in cluster_info if cluster_info[c]['plurality_label'] == author
+        )
+
+        recall = num_articles_in_plurality_clusters / total_articles if total_articles > 0 else 0
+        precision = num_articles_in_plurality_clusters / total_articles_in_plurality_clusters if total_articles_in_plurality_clusters > 0 else 0
+        f1_score = (2 * precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
 
         author_info[author] = {
             'total_clusters': total_clusters,
             'plurality_clusters': plurality_clusters,
             'recall': recall,
-            'precision': precision
+            'precision': precision,
+            'f1_score': f1_score
         }
 
     return author_info
+
+def plot_author_metrics(author_info):
+    '''
+    Plot precision, recall, and f1 score for each author as a barchart
+    '''
+    authors = list(author_info.keys())
+    # Convert to percentages
+    recalls = [info['recall'] * 100 for info in author_info.values()]
+    precisions = [info['precision'] * 100 for info in author_info.values()]
+    f1_scores = [info['f1_score'] * 100 for info in author_info.values()]
+    
+    x = range(len(authors))
+    plt.figure(figsize=(12, 6))
+    
+    plt.bar(x, recalls, width=0.25, label="Recall (%)", align='center', alpha=0.8)
+    plt.bar(x, precisions, width=0.25, label="Precision (%)", align='edge', alpha=0.8)
+    plt.bar(x, f1_scores, width=0.25, label="F1-score (%)", align='edge', alpha=0.8, color='green')
+
+    plt.xticks(x, authors, rotation=90)
+    plt.ylabel("Percentage")
+    plt.title("Author Classification Metrics (Precision, Recall, F1-score)")
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+def rank_authors_by_difficulty(author_info):
+    '''
+    Ranks authors based on their F1-score and prints the top 5 easiest and hardest authors to identify
+    '''
+    sorted_authors = sorted(author_info.items(), key=lambda x: x[1]['f1_score'], reverse=True)
+
+    print("\nTop 5 Easiest Authors To Identify (Highest F1-Score):")
+    for author, info in sorted_authors[:5]:
+        print(f"  {author}: {info['f1_score'] * 100:.2f}%")
+
+    print("\nTop 5 Hardest Authors To Identify (Lowest F1-Score):")
+    for author, info in sorted_authors[-5:]:
+        print(f"  {author}: {info['f1_score'] * 100:.2f}%")
+
+def author_metrics_to_csv(author_info):
+    '''
+    Create and save csv of all author metrics
+    '''
+    df = pd.DataFrame(author_info).T  # Transpose dictionary to DataFrame
+    df.columns = ["Total Clusters", "Plurality Clusters", "Recall", "Precision", "F1 Score"]
+    
+    # Convert Recall and Precision to percentages
+    df["Recall"] *= 100  
+    df["Precision"] *= 100  
+    df["F1 Score"] *= 100
+
+    df.to_csv("output.csv", index=True)
 
 
 if __name__ == "__main__":
@@ -113,12 +184,12 @@ if __name__ == "__main__":
     # Report author information
     print("\n== Author Metrics ==")
     for author, info in author_info.items():
-        recall = info['plurality_clusters'] / info['total_clusters'] if info['total_clusters'] > 0 else 0
-        precision = 0
-        if len([cluster_id for cluster_id in range(k) if cluster_info[cluster_id]['plurality_label'] == author]) > 0:
-            precision = info['plurality_clusters'] / len([cluster_id for cluster_id in range(k) if cluster_info[cluster_id]['plurality_label'] == author])
         print(f"Author {author}:")
         print(f"  Clusters with author: {info['total_clusters']}")
         print(f"  Clusters with author as plurality: {info['plurality_clusters']}")
-        print(f"  Recall: {recall * 100:.2f}%")
-        print(f"  Precision: {precision * 100:.2f}%")
+        print(f"  Recall: {info['recall'] * 100:.2f}%")
+        print(f"  Precision: {info['precision'] * 100:.2f}%")
+
+    #plot_author_metrics(author_info)
+    #rank_authors_by_difficulty(author_info)
+    #author_metrics_to_csv(author_info)

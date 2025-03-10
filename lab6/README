@@ -7,18 +7,23 @@ Xiuyuan Qiu (xiqiu@calpoly.edu)
 scikit-learn
 numpy
 nltk
+tqdm
+matplotlib
 ```
 If not already installed, run `pip install -r requirements.txt`.
+
 
 ## Authorship Attribution Through Classification (needs data in `C50/`)
 ```
 python textVectorizer.py C50/ matrix.npy ground_truth.csv [--stemming] [--stopwords]
+python knnAuthorship.py matrix.npy knn5.out 5
+python classifierEvaluation.py knn5.out ground_truth.csv
 
 ```
 
 ## Authorship Attribution Through Clustering (needs data in `C50/`)
 ```
 python textVectorizer.py C50/ matrix.npy ground_truth.csv [--stemming] [--stopwords]
-python KMeansAuthorship.py matrix.npy kmeans.out 5 [--n_init (int)] [--max_iter (int)]
+python KMeansAuthorship.py matrix.npy kmeans.out 50
 python clusteringEvaluation.py kmeans.out ground_truth.csv
 ```
