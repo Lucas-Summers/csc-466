@@ -9,8 +9,7 @@ from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 from tqdm import tqdm
 
-nltk.download('punkt')  # Ensure tokenization tools are available
-nltk.download('stopwords')  # Ensure stopwords are available
+nltk.download('stopwords')
 
 class textVectorizer:
     def __init__(self, base_dir, remove_stopwords=False, apply_stemming=False):
@@ -137,12 +136,11 @@ class textVectorizer:
         self.term_doc_freq = term_doc_freq
 
         # Compute the final TF-IDF matrix (TF * IDF)
-        self.tfidf_matrix = term_matrix * idf  # Vectorized multiplication of TF and IDF
+        self.tfidf_matrix = term_matrix * idf
 
-    # Save TF-IDF matrix, ground truth, okapi tables
     def save_output(self, output_file, ground_truth_file):
         '''
-        Save the computed TF-IDF matrix (numpy array) and the ground truth csv
+        Save the computed TF-IDF matrix (numpy array), the ground truth csv, and okapi tables
         '''
         np.save(output_file, self.tfidf_matrix)
         
@@ -165,7 +163,6 @@ if __name__ == "__main__":
     parser.add_argument('ground_truth_file', type=str, help="Path to save ground truth CSV")
     parser.add_argument('--stemming', action='store_true', help="Enable stemming")
     parser.add_argument('--stopwords', action='store_true', help="Enable stopword removal")
-
 
     args = parser.parse_args()
     
