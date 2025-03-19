@@ -1,0 +1,21 @@
+# 466 Lab 7
+Lucas Summers (lsumme01@calpoly.edu)
+
+## Requirements
+```
+numpy
+```
+If not already installed, run `pip install -r requirements.txt`.
+
+## Running
+python pageRank.py <input_file>
+
+Where <input_file> is the path to a CSV file formatted according to the specifications in the assignment.
+NOTE: "football" must be in the filename to correctly read in the NCAA football graph
+
+The program will output:
+- Read time (time to parse the input file)
+- Number of nodes and edges in the graph
+- Processing time (time to compute PageRank)
+- Number of iterations until convergence
+- The ranked list of nodes with their PageRank scores
