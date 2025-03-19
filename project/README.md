@@ -45,8 +45,7 @@ Next, open the `0_index` notebook which will guide you through the individual no
 
 - Intermediate dataframes and data shared between notebooks are stored in the `frames/` directory
 - All plots generated in notebooks are stored in the `plots/` directory
-
-
+- Notebooks 6 + 7 may take a while to run. We recommend allowing them up to a couple hours to complete.
 
 
 
