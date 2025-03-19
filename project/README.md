@@ -47,8 +47,12 @@ Next, open the `0_index` notebook which will guide you through the individual no
 - All plots generated in notebooks are stored in the `plots/` directory
 - Notebooks 6 + 7 may take a while to run. We recommend allowing them up to a couple hours to complete.
 
+## Running the Collaborative Filtering CLI
+To get personalized board game recommendations, go to the `ui/` directory and run: 
+```
+python cli.py ../data/user_ratings.csv ../data/games.csv
+```
 
-
-
+Make sure the passed in csv files are in the `data/` directory. 
 
 
