@@ -43,8 +43,8 @@ Next, open the `0_index` notebook which will guide you through the individual no
 
 *NOTE:* run notebooks in order as some rely on data produced in previous notebooks
 
-- Intermediate dataframes and data shared between notebooks are stored in the `frames/` dir
-- All plots generated in notebooks are stored in the `plots/` dir
+- Intermediate dataframes and data shared between notebooks are stored in the `frames/` directory
+- All plots generated in notebooks are stored in the `plots/` directory
 
 
 
