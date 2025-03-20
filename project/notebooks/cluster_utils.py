@@ -29,7 +29,6 @@ def perform_pca(data, features, variance_threshold=0.8, max_components=30):
     pca = PCA(n_components=n_components)
     pca_result = pca.fit_transform(feature_df)
     
-    # Print variance explained
     explained_variance_used = np.sum(pca.explained_variance_ratio_)
     print(f"Variance explained with {n_components} components: {explained_variance_used:.4f}")
     
@@ -39,7 +38,6 @@ def agglomerative_grid_search(data, features, variance_threshold=0.8, max_compon
     """
     Perform Agglomerative clustering with grid search (PCA applied first)
     """
-    # Get PCA result
     pca_result, pca, n_components = perform_pca(data, features, variance_threshold=variance_threshold, max_components=max_components)
     
     # Parameters to try
